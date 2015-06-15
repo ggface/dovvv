@@ -22,19 +22,15 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="@dimen/photo_spacing" />
 
-    <com.software.shell.fab.ActionButton
-        android:id="@+id/fabFlash"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        app:button_color="@color/accent"
-        app:button_colorPressed="@color/fab_material_red_900"
-        app:image="@drawable/fab_plus_icon"
-        app:image_size="32dp"
-        app:shadowResponsiveEffect_enabled="true"
-        app:shadow_xOffset="3dp"
-        app:shadow_yOffset="3dp"
-        app:type="DEFAULT" />
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_action_content_add"
+        app:borderWidth="0dp" />
 
 </RelativeLayout>
