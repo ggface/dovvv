@@ -1,7 +1,9 @@
 package com.ggface.achivetricks.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +14,10 @@ import android.widget.GridView;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
+import com.ggface.achivetricks.activities.PersonActivity;
 import com.ggface.achivetricks.adapters.EditorImagesAdapter;
 import com.ggface.achivetricks.classes.EditorBodyImage;
+import com.ggface.achivetricks.classes.RequestCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,16 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class GalleryFragment extends Fragment {
+
+    private final View.OnClickListener doneClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getActivity(), PersonActivity.class);
+//            intent.putExtra(Units.BARCODE, mCode);
+//            intent.putExtra(Units.IMAGE_URL, imageUrl);
+            startActivityForResult(intent, RequestCodes.RC_PERSON);
+        }
+    };
 
     private GridView gvCollection;
     private EditorImagesAdapter adapter;
@@ -57,6 +71,9 @@ public class GalleryFragment extends Fragment {
         gvCollection = UI.get(view, R.id.gvCollection);
         gvCollection.setAdapter(adapter);
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(doneClickListener);
+
         gvCollection.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -78,7 +95,7 @@ public class GalleryFragment extends Fragment {
 //                if (position == 0) {
 //                    Intent intent = new Intent(Intent.ACTION_PICK,
 //                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                    startActivityForResult(intent, RequestCodes.RC_GALLERY);
+//                    startActivityForResult(intent, RequestCodes.RC_BROWSE_PHOTO);
 //                } else {
 //                    PopupMenu popupMenu = new PopupMenu(getActivity(), view);
 //                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu_editor_gallary

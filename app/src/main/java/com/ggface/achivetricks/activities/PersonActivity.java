@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.os.Build;
 
 import com.ggface.achivetricks.R;
+import com.ggface.achivetricks.fragments.PersonFragment;
 
 public class PersonActivity extends ActionBarActivity {
 
@@ -21,7 +22,7 @@ public class PersonActivity extends ActionBarActivity {
         setContentView(R.layout.activity_person);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new PersonFragment())
                     .commit();
         }
     }
@@ -49,19 +50,4 @@ public class PersonActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_person, container, false);
-            return rootView;
-        }
-    }
 }
