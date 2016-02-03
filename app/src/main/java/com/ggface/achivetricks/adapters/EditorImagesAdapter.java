@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
 import com.ggface.achivetricks.classes.EditorBodyImage;
+import com.ggface.achivetricks.classes.Person;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class EditorImagesAdapter extends BaseAdapter {
     private RelativeLayout.LayoutParams mImageViewLP;
 
     private Context mContext;
-    private List<EditorBodyImage> items;
+    private List<Person> items;
     private LayoutInflater inflater;
 
     public EditorImagesAdapter(Context c) {
@@ -40,15 +41,15 @@ public class EditorImagesAdapter extends BaseAdapter {
 
         this.items = new ArrayList<>();
 
-        EditorBodyImage plus = new EditorBodyImage();
-        this.items.add(plus);
+//        EditorBodyImage plus = new EditorBodyImage();
+//        this.items.add(plus);
     }
 
     public int getCount() {
         return items == null ? 0 : items.size();
     }
 
-    public EditorBodyImage getItem(int position) {
+    public Person getItem(int position) {
         return items.get(position);
     }
 
@@ -63,7 +64,7 @@ public class EditorImagesAdapter extends BaseAdapter {
 
         ImageView ivThumb = UI.get(convertView, R.id.ivThumb);
         ProgressBar progress = UI.get(convertView, R.id.progress);
-        EditorBodyImage item = getItem(position);
+        Person item = getItem(position);
 
         UI.gone(progress);
         UI.show(ivThumb);
@@ -75,15 +76,15 @@ public class EditorImagesAdapter extends BaseAdapter {
             ivThumb.setLayoutParams(mImageViewLP);
         }
 
-
+        ivThumb.setImageBitmap(item.image);
 //        Picasso.with(mContext)
-//                .load(R.drawable.ic_template_nophoto)
+//                .
 //                .into(ivThumb);
 
         return convertView;
     }
 
-    public List<EditorBodyImage> getItems() {
+    public List<Person> getItems() {
         return this.items;
     }
 
@@ -106,10 +107,8 @@ public class EditorImagesAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void rewrite(List<EditorBodyImage> value) {
+    public void rewrite(List<Person> value) {
         this.items.clear();
-        EditorBodyImage plus = new EditorBodyImage();
-        this.items.add(plus);
         this.items.addAll(value);
         notifyDataSetChanged();
     }
