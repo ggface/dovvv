@@ -60,7 +60,7 @@ public class GalleryFragment extends Fragment {
         adapter = new EditorImagesAdapter(getActivity());
 
         bodyViews = new ArrayList<>();
-        dbHelper = new DBHelper(getActivity());
+//        dbHelper = new DBHelper(getActivity());
     }
 
     @Override
@@ -120,9 +120,9 @@ public class GalleryFragment extends Fragment {
             }
         });
 
-        List<Person> items = readDB();
-        UI.text(getActivity(), "size: " + items.size());
-        adapter.rewrite(items);
+//        List<Person> items = readDB();
+//        UI.text(getActivity(), "size: " + items.size());
+//        adapter.rewrite(items);
     }
 
     private List<Person> readDB() {
