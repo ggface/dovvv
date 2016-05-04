@@ -1,30 +1,43 @@
 package com.ggface.achivetricks.activities;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
 import com.ggface.achivetricks.R;
+import com.ggface.achivetricks.Units;
+import com.ggface.achivetricks.classes.Person;
+import com.ggface.achivetricks.classes.Tools;
 import com.ggface.achivetricks.fragments.PersonFragment;
+import com.google.gson.Gson;
 
-public class PersonActivity extends ActionBarActivity {
+public class PersonActivity extends AppCompatActivity {
+
+    private Person mPerson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person);
+
+        Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(pToolbar);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PersonFragment())
                     .commit();
         }
+
+        if (Tools.containsString(getIntent().getExtras(), Units.ARG_JSON)){
+            String json = getIntent().getExtras().getString(Units.ARG_JSON);
+            this.mPerson = new Gson().fromJson(json, Person.class);
+            getSupportActionBar().setTitle(this.mPerson.name);
+        }else
+            getSupportActionBar().setTitle("New lovely note");
     }
 
 

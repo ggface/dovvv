@@ -33,7 +33,7 @@ public class PersonFragment extends Fragment {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.btnAddPhoto:
+                case R.id.imageView:
                     Intent intent = new Intent(Intent.ACTION_PICK,
                             android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(intent, RequestCodes.RC_BROWSE_PHOTO);
@@ -75,7 +75,7 @@ public class PersonFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button btnAddPhoto = (Button) view.findViewById(R.id.btnAddPhoto);
+        ImageView btnAddPhoto = (ImageView) view.findViewById(R.id.imageView);
         CheckBox cbDefault = (CheckBox) view.findViewById(R.id.cbDefault);
         CheckBox cbAnal = (CheckBox) view.findViewById(R.id.cbAnal);
         CheckBox cbOral = (CheckBox) view.findViewById(R.id.cbOral);
