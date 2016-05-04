@@ -12,4 +12,10 @@ public class Person {
     public Date addDate;
     public Bitmap image;
 
+    public Person() {
+    }
+
+    public Person(String name) {
+        this.name = name;
+    }
 }

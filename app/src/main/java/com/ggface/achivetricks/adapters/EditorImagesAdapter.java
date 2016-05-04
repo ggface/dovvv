@@ -1,7 +1,6 @@
 package com.ggface.achivetricks.adapters;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,9 @@ import android.widget.RelativeLayout;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
-import com.ggface.achivetricks.classes.EditorBodyImage;
 import com.ggface.achivetricks.classes.Person;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,10 +73,10 @@ public class EditorImagesAdapter extends BaseAdapter {
             ivThumb.setLayoutParams(mImageViewLP);
         }
 
-        ivThumb.setImageBitmap(item.image);
-//        Picasso.with(mContext)
-//                .
-//                .into(ivThumb);
+//        ivThumb.setImageBitmap(item.image);
+        Picasso.with(mContext)
+                .load(R.drawable.test_photo_portret)
+                .into(ivThumb);
 
         return convertView;
     }

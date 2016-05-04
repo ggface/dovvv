@@ -119,8 +119,22 @@ public class GalleryFragment extends Fragment {
 //                }
             }
         });
-
-        List<Person> items = readDB();
+        List<Person> items = new ArrayList<>();
+        items.add(new Person("Sophia"));
+        items.add(new Person("Emma"));
+        items.add(new Person("Olivia"));
+        items.add(new Person("Ava"));
+        items.add(new Person("Isabella"));
+        items.add(new Person("Mia"));
+        items.add(new Person("Zoe"));
+        items.add(new Person("Lily"));
+        items.add(new Person("Emily"));
+        items.add(new Person("Madelyn"));
+        items.add(new Person("Madison"));
+        items.add(new Person("Chloe"));
+        items.add(new Person("Charlotte"));
+        items.add(new Person("Aubrey"));
+//        List<Person> items = readDB();
         UI.text(getActivity(), "size: " + items.size());
         adapter.rewrite(items);
     }
