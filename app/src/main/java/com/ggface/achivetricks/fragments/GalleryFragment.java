@@ -3,7 +3,6 @@ package com.ggface.achivetricks.fragments;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -60,7 +59,7 @@ public class GalleryFragment extends Fragment {
         adapter = new EditorImagesAdapter(getActivity());
 
         bodyViews = new ArrayList<>();
-        dbHelper = new DBHelper(getActivity());
+        dbHelper = DBHelper.getInstance(getActivity());
     }
 
     @Override
@@ -119,22 +118,30 @@ public class GalleryFragment extends Fragment {
 //                }
             }
         });
-        List<Person> items = new ArrayList<>();
-        items.add(new Person("Sophia"));
-        items.add(new Person("Emma"));
-        items.add(new Person("Olivia"));
-        items.add(new Person("Ava"));
-        items.add(new Person("Isabella"));
-        items.add(new Person("Mia"));
-        items.add(new Person("Zoe"));
-        items.add(new Person("Lily"));
-        items.add(new Person("Emily"));
-        items.add(new Person("Madelyn"));
-        items.add(new Person("Madison"));
-        items.add(new Person("Chloe"));
-        items.add(new Person("Charlotte"));
-        items.add(new Person("Aubrey"));
-//        List<Person> items = readDB();
+//        List<Person> items = new ArrayList<>();
+//        items.add(new Person("Sophia"));
+//        items.add(new Person("Emma"));
+//        items.add(new Person("Olivia"));
+//        items.add(new Person("Ava"));
+//        items.add(new Person("Isabella"));
+//        items.add(new Person("Mia"));
+//        items.add(new Person("Zoe"));
+//        items.add(new Person("Lily"));
+//        items.add(new Person("Emily"));
+//        items.add(new Person("Madelyn"));
+//        items.add(new Person("Madison"));
+//        items.add(new Person("Chloe"));
+//        items.add(new Person("Charlotte"));
+//        items.add(new Person("Aubrey"));
+        List<Person> items = readDB();
+        UI.text(getActivity(), "size: " + items.size());
+        adapter.rewrite(items);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        List<Person> items = readDB();
         UI.text(getActivity(), "size: " + items.size());
         adapter.rewrite(items);
     }
@@ -171,8 +178,8 @@ public class GalleryFragment extends Fragment {
                 item.oral = c.getInt(oralColIndex) == 1;
 
                 byte[] byteArray = c.getBlob(photoColIndex);
-
-                item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                if (byteArray != null)
+                    item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 // получаем значения по номерам столбцов и пишем все в лог
 //                Log.d(LOG_TAG,
 //                        "ID = " + c.getInt(idColIndex) +

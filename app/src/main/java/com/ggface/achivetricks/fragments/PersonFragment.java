@@ -1,19 +1,22 @@
 package com.ggface.achivetricks.fragments;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
+import com.ggface.achivetricks.activities.PersonActivity;
+import com.ggface.achivetricks.classes.DBHelper;
 import com.ggface.achivetricks.classes.Person;
 import com.ggface.achivetricks.classes.RequestCodes;
 import com.ggface.achivetricks.classes.Tools;
@@ -28,6 +31,14 @@ import java.io.File;
  * to handle interaction events.
  */
 public class PersonFragment extends Fragment {
+
+    private final View.OnClickListener doneClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            add();
+            getActivity().finish();
+        }
+    };
 
     private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -63,6 +74,7 @@ public class PersonFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         person = new Person();
+        person.name = "Телка";
     }
 
     @Override
@@ -80,11 +92,14 @@ public class PersonFragment extends Fragment {
         CheckBox cbAnal = (CheckBox) view.findViewById(R.id.cbAnal);
         CheckBox cbOral = (CheckBox) view.findViewById(R.id.cbOral);
         ivPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(doneClickListener);
 
         btnAddPhoto.setOnClickListener(onClickListener);
         cbDefault.setOnClickListener(onClickListener);
         cbAnal.setOnClickListener(onClickListener);
         cbOral.setOnClickListener(onClickListener);
+
     }
 
     @Override
@@ -114,6 +129,16 @@ public class PersonFragment extends Fragment {
         }
     }
 
+    private void add() {
+        ContentValues values = new ContentValues();
+        // Задайте значения для каждого столбца
+        values.put("girl_name", person.name);
+        values.put("pussy", person.traditional ? 1 : 0);
+        values.put("oral", person.oral ? 1 : 0);
+        values.put("anal", person.anal ? 1 : 0);
+        // Вставляем данные в таблицу
+        UI.text(getActivity(), "" + DBHelper.getInstance(getActivity()).add(values));
+    }
     // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {
 //        if (mListener != null) {
@@ -143,7 +168,7 @@ public class PersonFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
