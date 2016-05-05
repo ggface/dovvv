@@ -178,7 +178,7 @@ public class GalleryFragment extends Fragment {
                 item.oral = c.getInt(oralColIndex) == 1;
 
                 byte[] byteArray = c.getBlob(photoColIndex);
-                if (byteArray != null)
+                if (byteArray !=                 null)
                     item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 // получаем значения по номерам столбцов и пишем все в лог
 //                Log.d(LOG_TAG,
