@@ -69,4 +69,16 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return id;
     }
+
+    public long upd(long id, ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = model.getValues();
+
+
+        long returnCode = db.update("girls", values, "id = "+id, null);
+
+
+        db.close();
+        return returnCode;
+    }
 }

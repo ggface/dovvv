@@ -17,6 +17,7 @@ import android.widget.GridView;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
+import com.ggface.achivetricks.Units;
 import com.ggface.achivetricks.activities.PersonActivity;
 import com.ggface.achivetricks.adapters.EditorImagesAdapter;
 import com.ggface.achivetricks.classes.DBHelper;
@@ -99,6 +100,9 @@ public class GalleryFragment extends Fragment {
         gvCollection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), PersonActivity.class);
+                intent.putExtra(Units.ARG_INDEX, adapter.getItem(position).id);
+                startActivityForResult(intent, RequestCodes.RC_PERSON);
 //                if (position == 0) {
 //                    Intent intent = new Intent(Intent.ACTION_PICK,
 //                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -164,6 +168,7 @@ public class GalleryFragment extends Fragment {
         if (c.moveToFirst()) {
 
             // определяем номера столбцов по имени в выборке
+            int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("girl_name");
             int pussyColIndex = c.getColumnIndex("pussy");
             int analColIndex = c.getColumnIndex("anal");
@@ -171,6 +176,7 @@ public class GalleryFragment extends Fragment {
             int photoColIndex = c.getColumnIndex("girl_photo");
             Person item = new Person();
             do {
+                item.id = c.getInt(idColIndex);
                 item.name = c.getString(nameColIndex);
 
                 item.traditional = c.getInt(pussyColIndex) == 1;

@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
@@ -61,10 +62,13 @@ public class EditorImagesAdapter extends BaseAdapter {
 
         ImageView ivThumb = UI.get(convertView, R.id.ivThumb);
         ProgressBar progress = UI.get(convertView, R.id.progress);
+        TextView tvName = UI.get(convertView, R.id.tvName);
         Person item = getItem(position);
 
         UI.gone(progress);
         UI.show(ivThumb);
+
+        tvName.setText(item.name);
 
         ivThumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
         ivThumb.setLayoutParams(mImageViewLP);
@@ -73,7 +77,7 @@ public class EditorImagesAdapter extends BaseAdapter {
             ivThumb.setLayoutParams(mImageViewLP);
         }
 
-//        ivThumb.setImageBitmap(item.image);
+        ivThumb.setImageBitmap(item.image);
         Picasso.with(mContext)
                 .load(R.drawable.test_photo_portret)
                 .into(ivThumb);
