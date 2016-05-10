@@ -32,8 +32,8 @@
             android:id="@+id/tvName"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:maxLines="1"
             android:ellipsize="end" />
     </LinearLayout>

@@ -55,4 +55,8 @@ public class App extends Application {
 
         return dataDirectory;
     }
+
+    public static Context getContext() {
+        return sContext;
+    }
 }

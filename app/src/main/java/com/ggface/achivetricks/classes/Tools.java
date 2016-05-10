@@ -9,6 +9,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
@@ -30,6 +31,10 @@ public class Tools {
 
     public static boolean containsInt(Bundle src, String key) {
         return src != null && (Integer.valueOf(-1).compareTo(src.getInt(key, -1)) != 0);
+    }
+
+    public static boolean containsLong(Bundle src, String key) {
+        return src != null && (Long.valueOf(-1).compareTo(src.getLong(key, -1)) != 0);
     }
 
     public static <T> T fromMessage(Message msg, Class<T> classOfT) {
@@ -210,6 +215,10 @@ public class Tools {
 
     public static FragmentManager from(AppCompatActivity activity) {
         return activity.getSupportFragmentManager();
+    }
+
+    public static ActionBar getBar(Fragment instance) {
+        return ((AppCompatActivity) instance.getActivity()).getSupportActionBar();
     }
 
 }

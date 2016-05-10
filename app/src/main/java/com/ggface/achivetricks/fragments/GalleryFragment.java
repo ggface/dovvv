@@ -1,9 +1,6 @@
 package com.ggface.achivetricks.fragments;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -48,7 +45,6 @@ public class GalleryFragment extends Fragment {
     private EditorImagesAdapter adapter;
     private int mPhotoSize, mPhotoSpacing;
     private List<EditorBodyImage> bodyViews;
-    private DBHelper dbHelper;
 
     public GalleryFragment() {
     }
@@ -60,7 +56,7 @@ public class GalleryFragment extends Fragment {
         adapter = new EditorImagesAdapter(getActivity());
 
         bodyViews = new ArrayList<>();
-        dbHelper = DBHelper.getInstance(getActivity());
+//        DBHelper.getInstance(getActivity()).reCreate();
     }
 
     @Override
@@ -137,67 +133,16 @@ public class GalleryFragment extends Fragment {
 //        items.add(new Person("Chloe"));
 //        items.add(new Person("Charlotte"));
 //        items.add(new Person("Aubrey"));
-        List<Person> items = readDB();
-        UI.text(getActivity(), "size: " + items.size());
+        List<Person> items = DBHelper.getInstance(getActivity()).read();
         adapter.rewrite(items);
+//        File file = getContext().getDatabasePath(DBHelper.DATABASE_NAME);
+//        UI.text(getActivity(), null != file ? file.getAbsolutePath() : "no file");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        List<Person> items = readDB();
-        UI.text(getActivity(), "size: " + items.size());
+        List<Person> items = DBHelper.getInstance(getActivity()).read();
         adapter.rewrite(items);
-    }
-
-    private List<Person> readDB() {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        // делаем запрос всех данных из таблицы mytable, получаем Cursor
-        Cursor c;
-        try {
-//            c = db.query("GIRLS", new String[] {"PH_NAME", "PH_CUNT", "PH_ASS", "PH_MINET", "PH_PHOTO"}, null, null, null, null, null);
-//            c = db.query("GIRLS", null, null, null, null, null, null);
-            c = db.rawQuery("SELECT * FROM girls", null);
-        } catch (Exception e) {
-            return null;
-        }
-        UI.text(getActivity(), "count: " + c.getCount());
-        // ставим позицию курсора на первую строку выборки
-        // если в выборке нет строк, вернется false
-        List<Person> list = new ArrayList<>();
-        if (c.moveToFirst()) {
-
-            // определяем номера столбцов по имени в выборке
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("girl_name");
-            int pussyColIndex = c.getColumnIndex("pussy");
-            int analColIndex = c.getColumnIndex("anal");
-            int oralColIndex = c.getColumnIndex("oral");
-            int photoColIndex = c.getColumnIndex("girl_photo");
-            Person item = new Person();
-            do {
-                item.id = c.getInt(idColIndex);
-                item.name = c.getString(nameColIndex);
-
-                item.traditional = c.getInt(pussyColIndex) == 1;
-                item.anal = c.getInt(analColIndex) == 1;
-                item.oral = c.getInt(oralColIndex) == 1;
-
-                byte[] byteArray = c.getBlob(photoColIndex);
-                if (byteArray != null)
-                    item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                // получаем значения по номерам столбцов и пишем все в лог
-//                Log.d(LOG_TAG,
-//                        "ID = " + c.getInt(idColIndex) +
-//                                ", name = " + c.getString(nameColIndex) +
-//                                ", email = " + c.getString(emailColIndex));
-                // переход на следующую строку
-                // а если следующей нет (текущая - последняя), то false - выходим из цикла
-                list.add(item);
-            } while (c.moveToNext());
-        } else
-//            Log.d(LOG_TAG, "0 rows");
-            c.close();
-        return list;
     }
 }

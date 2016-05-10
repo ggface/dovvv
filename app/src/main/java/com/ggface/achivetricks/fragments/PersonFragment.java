@@ -1,10 +1,8 @@
 package com.ggface.achivetricks.fragments;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,26 +23,21 @@ import com.ggface.achivetricks.classes.DBHelper;
 import com.ggface.achivetricks.classes.Person;
 import com.ggface.achivetricks.classes.RequestCodes;
 import com.ggface.achivetricks.classes.Tools;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PersonFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- */
 public class PersonFragment extends Fragment {
 
     private final View.OnClickListener doneClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            person.name = etName.getText().toString();
-            if (person.id == 0)
-                add();
+            mPerson.name = etName.getText().toString();
+            if (Units.VAR_NEW_PERSON == mPerson.id)
+                DBHelper.getInstance(getActivity()).insert(mPerson);
             else
-                update();
+                DBHelper.getInstance(getActivity()).update(mPerson);
             getActivity().finish();
         }
     };
@@ -59,33 +52,22 @@ public class PersonFragment extends Fragment {
                     startActivityForResult(intent, RequestCodes.RC_BROWSE_PHOTO);
                     break;
                 case R.id.cbDefault:
-                    person.traditional = ((CheckBox) v).isChecked();
+                    mPerson.traditional = ((CheckBox) v).isChecked();
                     break;
                 case R.id.cbAnal:
-                    person.anal = ((CheckBox) v).isChecked();
+                    mPerson.anal = ((CheckBox) v).isChecked();
                     break;
                 case R.id.cbOral:
-                    person.oral = ((CheckBox) v).isChecked();
+                    mPerson.oral = ((CheckBox) v).isChecked();
                     break;
             }
         }
     };
 
-    private OnFragmentInteractionListener mListener;
-    private Person person;
+    private Person mPerson;
     private ImageView ivPhoto;
     private CheckBox cbDefault, cbAnal, cbOral;
     private EditText etName;
-
-    public PersonFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        person = new Person();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -111,7 +93,6 @@ public class PersonFragment extends Fragment {
         cbDefault.setOnClickListener(onClickListener);
         cbAnal.setOnClickListener(onClickListener);
         cbOral.setOnClickListener(onClickListener);
-
     }
 
     @Override
@@ -135,6 +116,10 @@ public class PersonFragment extends Fragment {
                 return;
             }
 
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            mPerson.image = BitmapFactory.decodeFile(file.getPath(), options);
+
             Picasso.with(getActivity())
                     .load(new File(file.getPath()))
                     .into(ivPhoto);
@@ -144,121 +129,36 @@ public class PersonFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        long id = getActivity().getIntent().getLongExtra(Units.ARG_INDEX, -1);
 
-        if (0 <= id) {
-            person = load(id);
-            etName.setText(person.name);
-            if (null != person.image)
-                ivPhoto.setImageBitmap(person.image);
+        Bundle bundle = getActivity().getIntent().getExtras();
 
-            cbDefault.setChecked(person.traditional);
-            cbOral.setChecked(person.oral);
-            cbAnal.setChecked(person.anal);
+        if (Tools.containsString(bundle, Units.ARG_JSON)) {
+            String json = bundle.getString(Units.ARG_JSON);
+            this.mPerson = new Gson().fromJson(json, Person.class);
+
+            Tools.getBar(this).setTitle(this.mPerson.name);
+        } else if (Tools.containsLong(bundle, Units.ARG_INDEX)) {
+            long id = bundle.getLong(Units.ARG_INDEX);
+            mPerson = DBHelper.getInstance(getActivity()).select(id);
+
+            if (null == mPerson) {
+                UI.text(getActivity(), "A person not found");
+                getActivity().finish();
+                return;
+            }
+            etName.setText(mPerson.name);
+            if (null != mPerson.image)
+                ivPhoto.setImageBitmap(mPerson.image);
+
+            cbDefault.setChecked(mPerson.traditional);
+            cbOral.setChecked(mPerson.oral);
+            cbAnal.setChecked(mPerson.anal);
+
+            Tools.getBar(this).setTitle("Edit lovely note");
+        } else {
+            mPerson = new Person();
+            mPerson.id = Units.VAR_NEW_PERSON;
+            Tools.getBar(this).setTitle("New lovely note");
         }
-    }
-
-    private Person load(long id) {
-        Person item = null;
-        SQLiteDatabase db = DBHelper.getInstance(getActivity()).getWritableDatabase();
-        // делаем запрос всех данных из таблицы mytable, получаем Cursor
-        Cursor c;
-        try {
-//            c = db.query("GIRLS", new String[] {"PH_NAME", "PH_CUNT", "PH_ASS", "PH_MINET", "PH_PHOTO"}, null, null, null, null, null);
-//            c = db.query("GIRLS", null, null, null, null, null, null);
-            c = db.rawQuery("SELECT * FROM girls WHERE id = " + id, null);
-        } catch (Exception e) {
-            return null;
-        }
-        UI.text(getActivity(), "count: " + c.getCount());
-        // ставим позицию курсора на первую строку выборки
-        // если в выборке нет строк, вернется false
-//            List<Person> list = new ArrayList<>();
-        if (c.moveToFirst()) {
-
-            // определяем номера столбцов по имени в выборке
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("girl_name");
-            int pussyColIndex = c.getColumnIndex("pussy");
-            int analColIndex = c.getColumnIndex("anal");
-            int oralColIndex = c.getColumnIndex("oral");
-            int photoColIndex = c.getColumnIndex("girl_photo");
-            item = new Person();
-            item.id = c.getInt(idColIndex);
-            item.name = c.getString(nameColIndex);
-
-            item.traditional = c.getInt(pussyColIndex) == 1;
-            item.anal = c.getInt(analColIndex) == 1;
-            item.oral = c.getInt(oralColIndex) == 1;
-
-            byte[] byteArray = c.getBlob(photoColIndex);
-            if (byteArray != null)
-                item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        }
-
-
-        c.close();
-        return item;
-
-    }
-
-    private void add() {
-        ContentValues values = new ContentValues();
-        // Задайте значения для каждого столбца
-        values.put("girl_name", person.name);
-        values.put("pussy", person.traditional ? 1 : 0);
-        values.put("oral", person.oral ? 1 : 0);
-        values.put("anal", person.anal ? 1 : 0);
-        // Вставляем данные в таблицу
-        UI.text(getActivity(), "" + DBHelper.getInstance(getActivity()).add(values));
-    }
-
-    private void update() {
-        ContentValues values = new ContentValues();
-        // Задайте значения для каждого столбца
-        values.put("girl_name", person.name);
-        values.put("pussy", person.traditional ? 1 : 0);
-        values.put("oral", person.oral ? 1 : 0);
-        values.put("anal", person.anal ? 1 : 0);
-        // Вставляем данные в таблицу
-        UI.text(getActivity(), "" + DBHelper.getInstance(getActivity()).upd(person.id, values));
-    }
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }
