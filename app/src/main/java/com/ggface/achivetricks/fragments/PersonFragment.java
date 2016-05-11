@@ -2,8 +2,6 @@ package com.ggface.achivetricks.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,10 +32,28 @@ public class PersonFragment extends Fragment {
         @Override
         public void onClick(View v) {
             mPerson.name = etName.getText().toString();
-            if (Units.VAR_NEW_PERSON == mPerson.id)
-                DBHelper.getInstance(getActivity()).insert(mPerson);
-            else
-                DBHelper.getInstance(getActivity()).update(mPerson);
+
+            if (Units.VAR_NEW_PERSON == mPerson.id) {
+                mPerson.id = DBHelper.getInstance(getActivity()).insert(mPerson);
+            }
+
+            if (Units.VAR_NEW_PERSON == mPerson.id) {
+                UI.text(getActivity(), "Error #1");
+                return;
+            }
+
+            if (null != mPerson.fullpath) {
+                String extension = Tools.writePhoto(mPerson.id, new File(mPerson.fullpath));
+                if (null != extension)
+                    mPerson.extension = extension;
+                else {
+                    UI.text(getActivity(), "Error #2");
+                    return;
+                }
+            }
+
+            DBHelper.getInstance(getActivity()).update(mPerson);
+
             getActivity().finish();
         }
     };
@@ -116,12 +132,10 @@ public class PersonFragment extends Fragment {
                 return;
             }
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            mPerson.image = BitmapFactory.decodeFile(file.getPath(), options);
+            mPerson.fullpath = file.getPath();
 
             Picasso.with(getActivity())
-                    .load(new File(file.getPath()))
+                    .load(file)
                     .into(ivPhoto);
         }
     }
@@ -146,9 +160,12 @@ public class PersonFragment extends Fragment {
                 getActivity().finish();
                 return;
             }
-            etName.setText(mPerson.name);
-            if (null != mPerson.image)
-                ivPhoto.setImageBitmap(mPerson.image);
+            etName.append(mPerson.name);
+
+            if (null != mPerson.extension)
+                Picasso.with(getActivity())
+                        .load(new File(mPerson.extension))
+                        .into(ivPhoto);
 
             cbDefault.setChecked(mPerson.traditional);
             cbOral.setChecked(mPerson.oral);

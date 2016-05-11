@@ -10,11 +10,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ggface.achivetricks.App;
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
 import com.ggface.achivetricks.classes.Person;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,11 +64,10 @@ public class EditorImagesAdapter extends BaseAdapter {
         }
 
         ImageView ivThumb = UI.get(convertView, R.id.ivThumb);
-        ProgressBar progress = UI.get(convertView, R.id.progress);
+        final ProgressBar progress = UI.get(convertView, R.id.progress);
         TextView tvName = UI.get(convertView, R.id.tvName);
         Person item = getItem(position);
 
-        UI.gone(progress);
         UI.show(ivThumb);
 
         tvName.setText(item.name);
@@ -77,11 +79,27 @@ public class EditorImagesAdapter extends BaseAdapter {
             ivThumb.setLayoutParams(mImageViewLP);
         }
 
-        ivThumb.setImageBitmap(item.image);
-        Picasso.with(mContext)
-                .load(R.drawable.test_photo_portret)
-                .into(ivThumb);
+        if (null != item.getFilename()) {
+            UI.show(progress);
+            File file = App.getContext().getFileStreamPath(item.getFilename());
+            if (!file.exists())
+                App.logD("EditorImagesAdapter getView()", file.getAbsolutePath() + " not found ((((");
+            else
+                App.logD("EditorImagesAdapter getView()", file.getAbsolutePath());
+            Picasso.with(mContext)
+                    .load(file)
+                    .into(ivThumb, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            UI.gone(progress);
+                        }
 
+                        @Override
+                        public void onError() {
+                            UI.gone(progress);
+                        }
+                    });
+        }
         return convertView;
     }
 

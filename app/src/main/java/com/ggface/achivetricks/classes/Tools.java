@@ -13,9 +13,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
+import com.ggface.achivetricks.App;
 import com.ggface.achivetricks.Units;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -219,6 +224,37 @@ public class Tools {
 
     public static ActionBar getBar(Fragment instance) {
         return ((AppCompatActivity) instance.getActivity()).getSupportActionBar();
+    }
+
+    public static String writePhoto(long index, File src) {
+        String filenameArray[] = src.getName().split("\\.");
+        String extension = filenameArray[filenameArray.length - 1];
+        String newFilename = String.valueOf(index) + '.' + extension;
+
+        InputStream is = null;
+        FileOutputStream os = null;
+        try {
+            is = new FileInputStream(src);
+            os = App.getContext().openFileOutput(newFilename, Context.MODE_PRIVATE);
+            byte[] buff = new byte[1024];
+            int len;
+            while ((len = is.read(buff)) > 0) {
+                os.write(buff, 0, len);
+            }
+            is.close();
+            os.close();
+            return extension;
+        } catch (IOException e) {
+            return null;
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+                if (os != null)
+                    os.close();
+            } catch (IOException io) {
+            }
+        }
     }
 
 }

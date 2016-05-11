@@ -3,6 +3,7 @@ package com.ggface.achivetricks.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.WindowManager;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.fragments.PersonFragment;
@@ -16,6 +17,8 @@ public class PersonActivity extends AppCompatActivity {
 
         Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(pToolbar);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

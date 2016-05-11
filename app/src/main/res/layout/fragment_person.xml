@@ -24,7 +24,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/cbDefault"
-        android:text="anal" />
+        android:text="a" />
 
     <CheckBox
         android:id="@+id/cbOral"
@@ -33,7 +33,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/cbAnal"
-        android:text="oral" />
+        android:text="o" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -58,7 +58,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:switchPadding="8dp"
-        android:text="standart" />
+        android:text="standart"
+        android:visibility="invisible" />
 
     <Switch
         android:id="@+id/switch2"
@@ -68,7 +69,8 @@
         android:layout_alignRight="@+id/switch1"
         android:layout_below="@+id/switch1"
         android:switchPadding="8dp"
-        android:text="anal" />
+        android:text="anal"
+        android:visibility="invisible" />
 
     <Switch
         android:id="@+id/switch3"
@@ -78,7 +80,8 @@
         android:layout_alignRight="@+id/switch2"
         android:layout_below="@+id/switch2"
         android:switchPadding="8dp"
-        android:text="oral" />
+        android:text="oral"
+        android:visibility="invisible" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -99,5 +102,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:inputType="textCapSentences"
+        android:maxLines="1" />
 </RelativeLayout>

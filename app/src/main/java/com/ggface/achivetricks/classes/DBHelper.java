@@ -1,12 +1,10 @@
 package com.ggface.achivetricks.classes;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.BitmapFactory;
 
 import com.ggface.achivetricks.App;
 
@@ -31,8 +29,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     ", person_name TEXT" +
                     ", pussy INTEGER" +
                     ", anal INTEGER" +
-                    ", oral INTEGER" +
-                    ", girl_photo BLOB);");
+                    ", oral INTEGER);");
         } catch (SQLException e) {
             String msg = e.getMessage();
             App.logD("DBHelper onCreate", msg);
@@ -53,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     ", pussy INTEGER" +
                     ", anal INTEGER" +
                     ", oral INTEGER" +
-                    ", girl_photo BLOB);");
+                    ", ext TEXT);");
         } catch (SQLException e) {
             String msg = e.getMessage();
             App.logD("DBHelper onCreate", msg);
@@ -92,23 +89,23 @@ public class DBHelper extends SQLiteOpenHelper {
 //            cursor.close();
 //        }
 
-        db.insert(TABLE_NAME, null, instance.toDB());
+        long id = db.insert(TABLE_NAME, null, instance.toDB());
         db.close();
-        return -1;
+        return id;
     }
 
     public long update(Person instance) {
-        ContentValues values = new ContentValues();
-        // Задайте значения для каждого столбца
-        values.put("person_name", instance.name);
-        values.put("pussy", instance.traditional ? 1 : 0);
-        values.put("oral", instance.oral ? 1 : 0);
-        values.put("anal", instance.anal ? 1 : 0);
+//        ContentValues values = new ContentValues();
+//        // Задайте значения для каждого столбца
+//        values.put("person_name", instance.name);
+//        values.put("pussy", instance.traditional ? 1 : 0);
+//        values.put("oral", instance.oral ? 1 : 0);
+//        values.put("anal", instance.anal ? 1 : 0);
         SQLiteDatabase db = this.getWritableDatabase();
 //        ContentValues values = model.getValues();
 
         String[] args = new String[]{String.valueOf(instance.id)};
-        db.update(TABLE_NAME, values, "_id=?", args);
+        db.update(TABLE_NAME, instance.toDB(), "_id=?", args);
 
         db.close();
         return -1;
@@ -136,7 +133,8 @@ public class DBHelper extends SQLiteOpenHelper {
             int pussyColIndex = c.getColumnIndex("pussy");
             int analColIndex = c.getColumnIndex("anal");
             int oralColIndex = c.getColumnIndex("oral");
-            int photoColIndex = c.getColumnIndex("girl_photo");
+            int extColIndex = c.getColumnIndex("ext");
+//            int photoColIndex = c.getColumnIndex("girl_photo");
 
             do {
                 Person item = new Person();
@@ -146,10 +144,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 item.traditional = c.getInt(pussyColIndex) == 1;
                 item.anal = c.getInt(analColIndex) == 1;
                 item.oral = c.getInt(oralColIndex) == 1;
-
-                byte[] byteArray = c.getBlob(photoColIndex);
-                if (byteArray != null)
-                    item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                item.extension = c.getString(extColIndex);
+//                byte[] byteArray = c.getBlob(photoColIndex);
+//                if (byteArray != null)
+//                    item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 // получаем значения по номерам столбцов и пишем все в лог
 //                Log.d(LOG_TAG,
 //                        "ID = " + c.getInt(idColIndex) +
@@ -189,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
             int pussyColIndex = c.getColumnIndex("pussy");
             int analColIndex = c.getColumnIndex("anal");
             int oralColIndex = c.getColumnIndex("oral");
-            int photoColIndex = c.getColumnIndex("girl_photo");
+//            int photoColIndex = c.getColumnIndex("girl_photo");
             item = new Person();
             item.id = c.getInt(idColIndex);
             item.name = c.getString(nameColIndex);
@@ -198,9 +196,9 @@ public class DBHelper extends SQLiteOpenHelper {
             item.anal = c.getInt(analColIndex) == 1;
             item.oral = c.getInt(oralColIndex) == 1;
 
-            byte[] byteArray = c.getBlob(photoColIndex);
-            if (byteArray != null)
-                item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+//            byte[] byteArray = c.getBlob(photoColIndex);
+//            if (byteArray != null)
+//                item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         }
 
 
