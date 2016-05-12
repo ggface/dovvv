@@ -47,7 +47,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         int screenWidth = PixelUtils.getScreenWidth(context);
         mItemWidth = (screenWidth / columns);
         mItemHeight = (int) ((double) mItemWidth / 0.677);
-        mMargin = 0;// PixelUtils.getPixelsFromDp(context, 2);
+        mMargin = PixelUtils.getPixelsFromDp(context, 2);
 
         setItems(items);
     }
@@ -105,10 +105,10 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             RequestCreator rc;
             if (file != null) {
                 rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(file);
-                rc.resize(mItemWidth, mItemHeight);
-            } else
-                rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.ic_photo_placeholder);
 
+            } else
+                rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.test_photo_portret);
+            rc.resize(mItemWidth, mItemHeight);
             rc.transform(DrawGradient.INSTANCE)
                     .into(videoViewHolder.coverImage, new Callback() {
                         @Override
@@ -126,7 +126,6 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             AnimUtils.fadeIn(videoViewHolder.year);
                         }
                     });
-//            }
         }
     }
 
