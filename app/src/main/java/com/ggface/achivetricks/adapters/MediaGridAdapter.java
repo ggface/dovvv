@@ -91,7 +91,11 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
             videoViewHolder.title.setText(item.name);
-            videoViewHolder.year.setText("vxx");
+
+            String sd = item.traditional ? "v" : "x";
+            String so = item.oral ? "v" : "x";
+            String sa = item.anal ? "v" : "x";
+            videoViewHolder.year.setText(sd + so + sa);
 
             videoViewHolder.coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             videoViewHolder.coverImage.setVisibility(View.GONE);
@@ -105,11 +109,12 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             RequestCreator rc;
             if (file != null) {
                 rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(file);
-
             } else
                 rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.test_photo_portret);
-            rc.resize(mItemWidth, mItemHeight);
-            rc.transform(DrawGradient.INSTANCE)
+
+            rc.resize(mItemWidth, mItemHeight)
+                    .centerCrop()
+                    .transform(DrawGradient.INSTANCE)
                     .into(videoViewHolder.coverImage, new Callback() {
                         @Override
                         public void onSuccess() {
