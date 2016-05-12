@@ -1,22 +1,38 @@
 package com.ggface.achivetricks.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.fragments.PersonFragment;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class PersonActivity extends AppCompatActivity {
+
+    @Bind(R.id.toolbar)
+    Toolbar pToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person);
 
-        Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(pToolbar);
+        pToolbar.setNavigationIcon(R.drawable.ic_action_navigation_arrow_back);
+        pToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -25,6 +41,11 @@ public class PersonActivity extends AppCompatActivity {
                     .add(R.id.container, new PersonFragment())
                     .commit();
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
 

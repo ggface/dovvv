@@ -29,7 +29,8 @@ public class DBHelper extends SQLiteOpenHelper {
                     ", person_name TEXT" +
                     ", pussy INTEGER" +
                     ", anal INTEGER" +
-                    ", oral INTEGER);");
+                    ", oral INTEGER" +
+                    ", ext TEXT);");
         } catch (SQLException e) {
             String msg = e.getMessage();
             App.logD("DBHelper onCreate", msg);
@@ -68,41 +69,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public long insert(Person instance) {
         SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues values = model.getValues();
-
-//        String sql = "insert into "
-//                + TABLE_NAME
-//                + " (person_name, pussy, oral, anal) "
-//                + "values(" + instance.name + ", " + (instance.traditional ? 1 : 0) + ", "
-//                + (instance.oral ? 1 : 0) + ", " + (instance.anal ? 1 : 0) + ")";
-//        App.logD("insert", sql);
-//        db.execSQL(sql);
-//        long returnCode = db.insert(TABLE_NAME, null, values);
-//        Log.d(DBHelper.class.getSimpleName(), "Row added at " + returnCode
-//                + " of " + model.getTableName());
-
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME
-//                + " WHERE _id=last_insert_rowid()", new String[]{});
-//        if (cursor != null) {
-//            cursor.moveToNext();
-//            id = cursor.getInt(cursor.getColumnIndex("_id"));
-//            cursor.close();
-//        }
-
         long id = db.insert(TABLE_NAME, null, instance.toDB());
         db.close();
         return id;
     }
 
     public long update(Person instance) {
-//        ContentValues values = new ContentValues();
-//        // Задайте значения для каждого столбца
-//        values.put("person_name", instance.name);
-//        values.put("pussy", instance.traditional ? 1 : 0);
-//        values.put("oral", instance.oral ? 1 : 0);
-//        values.put("anal", instance.anal ? 1 : 0);
         SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues values = model.getValues();
 
         String[] args = new String[]{String.valueOf(instance.id)};
         db.update(TABLE_NAME, instance.toDB(), "_id=?", args);
@@ -113,28 +86,22 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public List<Person> read() {
         SQLiteDatabase db = this.getWritableDatabase();
-        // делаем запрос всех данных из таблицы mytable, получаем Cursor
+
         Cursor c;
         try {
-//            c = db.query("GIRLS", new String[] {"PH_NAME", "PH_CUNT", "PH_ASS", "PH_MINET", "PH_PHOTO"}, null, null, null, null, null);
-//            c = db.query("GIRLS", null, null, null, null, null, null);
             c = db.rawQuery("SELECT * FROM " + DBHelper.TABLE_NAME, null);
         } catch (Exception e) {
             return null;
         }
-        // ставим позицию курсора на первую строку выборки
-        // если в выборке нет строк, вернется false
+
         List<Person> list = new ArrayList<>();
         if (c.moveToFirst()) {
-
-            // определяем номера столбцов по имени в выборке
             int idColIndex = c.getColumnIndex("_id");
             int nameColIndex = c.getColumnIndex("person_name");
             int pussyColIndex = c.getColumnIndex("pussy");
             int analColIndex = c.getColumnIndex("anal");
             int oralColIndex = c.getColumnIndex("oral");
             int extColIndex = c.getColumnIndex("ext");
-//            int photoColIndex = c.getColumnIndex("girl_photo");
 
             do {
                 Person item = new Person();
@@ -145,43 +112,26 @@ public class DBHelper extends SQLiteOpenHelper {
                 item.anal = c.getInt(analColIndex) == 1;
                 item.oral = c.getInt(oralColIndex) == 1;
                 item.extension = c.getString(extColIndex);
-//                byte[] byteArray = c.getBlob(photoColIndex);
-//                if (byteArray != null)
-//                    item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                // получаем значения по номерам столбцов и пишем все в лог
-//                Log.d(LOG_TAG,
-//                        "ID = " + c.getInt(idColIndex) +
-//                                ", name = " + c.getString(nameColIndex) +
-//                                ", email = " + c.getString(emailColIndex));
-                // переход на следующую строку
-                // а если следующей нет (текущая - последняя), то false - выходим из цикла
+
                 list.add(item);
             } while (c.moveToNext());
-        } else
-//            Log.d(LOG_TAG, "0 rows");
-            c.close();
+        }
+
+        c.close();
         return list;
     }
 
     public Person select(long id) {
         Person item = null;
         SQLiteDatabase db = this.getWritableDatabase();
-        // делаем запрос всех данных из таблицы mytable, получаем Cursor
         Cursor c;
         try {
-//            c = db.query("GIRLS", new String[] {"PH_NAME", "PH_CUNT", "PH_ASS", "PH_MINET", "PH_PHOTO"}, null, null, null, null, null);
-//            c = db.query("GIRLS", null, null, null, null, null, null);
             c = db.rawQuery("SELECT * FROM " + DBHelper.TABLE_NAME + " WHERE _id = " + id, null);
         } catch (Exception e) {
             return null;
         }
-//        UI.text(getActivity(), "count: " + c.getCount());
-        // ставим позицию курсора на первую строку выборки
-        // если в выборке нет строк, вернется false
-//            List<Person> list = new ArrayList<>();
-        if (c.moveToFirst()) {
 
-            // определяем номера столбцов по имени в выборке
+        if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("_id");
             int nameColIndex = c.getColumnIndex("person_name");
             int pussyColIndex = c.getColumnIndex("pussy");
@@ -196,11 +146,7 @@ public class DBHelper extends SQLiteOpenHelper {
             item.anal = c.getInt(analColIndex) == 1;
             item.oral = c.getInt(oralColIndex) == 1;
             item.extension = c.getString(extColIndex);
-//            byte[] byteArray = c.getBlob(photoColIndex);
-//            if (byteArray != null)
-//                item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         }
-
 
         c.close();
         return item;

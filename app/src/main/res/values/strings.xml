@@ -6,4 +6,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="export_complete">Export complete</string>
+    <string name="edit_lovely_note">Edit lovely note</string>
+    <string name="new_lovely_note">New lovely note</string>
+    <string name="person_not_found">A person not found</string>
 </resources>

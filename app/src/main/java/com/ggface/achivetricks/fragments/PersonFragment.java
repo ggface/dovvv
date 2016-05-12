@@ -13,21 +13,25 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.ggface.achivetricks.App;
 import com.ggface.achivetricks.R;
-import com.ggface.achivetricks.UI;
 import com.ggface.achivetricks.Units;
 import com.ggface.achivetricks.classes.DBHelper;
 import com.ggface.achivetricks.classes.Person;
 import com.ggface.achivetricks.classes.RequestCodes;
 import com.ggface.achivetricks.classes.Tools;
+import com.ggface.achivetricks.widgets.WarningToast;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-public class PersonFragment extends Fragment {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+public class PersonFragment extends Fragment implements WarningToast.OnToastListener {
 
     private final View.OnClickListener doneClickListener = new View.OnClickListener() {
         @Override
@@ -39,7 +43,7 @@ public class PersonFragment extends Fragment {
             }
 
             if (Units.VAR_NEW_PERSON == mPerson.id) {
-                UI.text(getActivity(), "Error #1");
+                showWarning("Error. Insert a row to database failed.");
                 return;
             }
 
@@ -48,13 +52,12 @@ public class PersonFragment extends Fragment {
                 if (null != extension)
                     mPerson.extension = extension;
                 else {
-                    UI.text(getActivity(), "Error #2");
+                    showWarning("Error. Copy file failed.");
                     return;
                 }
             }
 
             DBHelper.getInstance(getActivity()).update(mPerson);
-
             getActivity().finish();
         }
     };
@@ -81,10 +84,29 @@ public class PersonFragment extends Fragment {
         }
     };
 
+    private Toast wToast;
     private Person mPerson;
-    private ImageView ivPhoto;
-    private CheckBox cbDefault, cbAnal, cbOral;
-    private EditText etName;
+
+    @Bind(R.id.ivPhoto)
+    ImageView ivPhoto;
+
+    @Bind(R.id.cbDefault)
+    CheckBox cbDefault;
+
+    @Bind(R.id.cbAnal)
+    CheckBox cbAnal;
+
+    @Bind(R.id.cbOral)
+    CheckBox cbOral;
+
+    @Bind(R.id.etName)
+    EditText etName;
+
+    @Bind(R.id.imageView)
+    ImageView btnAddPhoto;
+
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,17 +117,11 @@ public class PersonFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
 
-        ImageView btnAddPhoto = (ImageView) view.findViewById(R.id.imageView);
-        cbDefault = (CheckBox) view.findViewById(R.id.cbDefault);
-        cbAnal = (CheckBox) view.findViewById(R.id.cbAnal);
-        cbOral = (CheckBox) view.findViewById(R.id.cbOral);
-        ivPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
-        etName = (EditText) view.findViewById(R.id.etName);
+        wToast = new WarningToast(getActivity());
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(doneClickListener);
-
         btnAddPhoto.setOnClickListener(onClickListener);
         cbDefault.setOnClickListener(onClickListener);
         cbAnal.setOnClickListener(onClickListener);
@@ -118,18 +134,18 @@ public class PersonFragment extends Fragment {
         if (RequestCodes.RC_BROWSE_PHOTO == requestCode && resultCode == Activity.RESULT_OK) {
 
             if (data == null || data.getData() == null) {
-//                WarningDialog.showInstance(Tools.from(this), b);
+                showWarning("Error. Empty data.");
                 return;
             }
             Uri photo = Tools.getSelectedImage(getActivity(), data.getData());
             if (photo == null) {
-//                WarningDialog.showInstance(Tools.from(this), b);
+                showWarning("Error. Empty uri.");
                 return;
             }
 
             File file = new File(photo.getPath());
             if (!file.exists()) {
-//                WarningDialog.showInstance(Tools.from(this), b);
+                showWarning("Error. File not exits.");
                 return;
             }
 
@@ -138,6 +154,7 @@ public class PersonFragment extends Fragment {
             Picasso.with(getActivity())
                     .load(file)
                     .into(ivPhoto);
+            showWarning("Error. Text.");
         }
     }
 
@@ -157,7 +174,7 @@ public class PersonFragment extends Fragment {
             mPerson = DBHelper.getInstance(getActivity()).select(id);
 
             if (null == mPerson) {
-                UI.text(getActivity(), "A person not found");
+                showWarning(getString(R.string.person_not_found));
                 getActivity().finish();
                 return;
             }
@@ -174,11 +191,22 @@ public class PersonFragment extends Fragment {
             cbOral.setChecked(mPerson.oral);
             cbAnal.setChecked(mPerson.anal);
 
-            Tools.getBar(this).setTitle("Edit lovely note");
+            Tools.getBar(this).setTitle(R.string.edit_lovely_note);
         } else {
             mPerson = new Person();
             mPerson.id = Units.VAR_NEW_PERSON;
-            Tools.getBar(this).setTitle("New lovely note");
+            Tools.getBar(this).setTitle(R.string.new_lovely_note);
         }
+    }
+
+    @Override
+    public void showWarning(String message) {
+        wToast.setText(message);
+        wToast.show();
+    }
+
+    @Override
+    public void hide() {
+        wToast.cancel();
     }
 }

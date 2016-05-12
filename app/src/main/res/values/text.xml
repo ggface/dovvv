@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="TextView.Roboto.Secondary" parent="@style/TextAppearance.AppCompat">
+        <item name="fontPath">fonts/Roboto-Light.ttf</item>
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textSize">@dimen/font_size_default</item>
+    </style>
+
+    <style name="TextView.Roboto.Secondary.Inverse" parent="@style/TextView.Roboto.Secondary">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextView.Roboto.Default" parent="@style/TextAppearance.AppCompat">
+        <item name="fontPath">fonts/Roboto-Regular.ttf</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">@dimen/font_size_default</item>
+    </style>
+
+    <style name="TextView.Roboto.Default.Inverse" parent="@style/TextView.Roboto.Default">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+</resources>

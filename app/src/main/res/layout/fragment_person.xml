@@ -5,7 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ggface.achivetricks.fragments.PersonFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <ImageView
         android:id="@+id/ivPhoto"
         android:layout_width="match_parent"
@@ -15,16 +14,7 @@
         android:id="@+id/cbDefault"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="default" />
-
-    <CheckBox
-        android:id="@+id/cbAnal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/cbDefault"
-        android:text="a" />
+        android:text="8=v)" />
 
     <CheckBox
         android:id="@+id/cbOral"
@@ -32,8 +22,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/cbAnal"
-        android:text="o" />
+        android:layout_below="@+id/cbDefault"
+        android:text="8=o:" />
+
+    <CheckBox
+        android:id="@+id/cbAnal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/cbOral"
+        android:text="8=((" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -98,7 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/etName"
-        android:layout_below="@+id/cbOral"
+        android:layout_below="@+id/cbAnal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"

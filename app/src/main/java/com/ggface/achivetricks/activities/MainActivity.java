@@ -1,32 +1,32 @@
 package com.ggface.achivetricks.activities;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 
-import com.ggface.achivetricks.App;
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.fragments.GalleryFragment;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class MainActivity extends AppCompatActivity {
 
 //    private static final int REQUEST_WRITE_STORAGE = 112;
 
+    @Bind(R.id.toolbar)
+    Toolbar pToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(pToolbar);
 
 //        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 //                    REQUEST_WRITE_STORAGE);
 //        }
 
-         if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.container, new GalleryFragment())
@@ -46,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 //        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
-        @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);

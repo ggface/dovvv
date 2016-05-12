@@ -5,11 +5,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.Toast;
 
-/**
- * Created by ggface on 28.05.15.
- */
 public class UI {
-
 
     public static void gone(View view) {
         if (view != null)
