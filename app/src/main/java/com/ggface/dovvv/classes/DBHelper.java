@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.classes;
+package com.ggface.dovvv.classes;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,7 +6,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.ggface.achivetricks.App;
+import com.ggface.dovvv.App;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.classes;
+package com.ggface.dovvv.classes;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -13,8 +13,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import com.ggface.achivetricks.App;
-import com.ggface.achivetricks.Units;
+import com.ggface.dovvv.App;
+import com.ggface.dovvv.Units;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -256,6 +256,17 @@ public class Tools {
             } catch (IOException io) {
             }
         }
+    }
+
+    public static long folderSize(File directory) {
+        long length = 0;
+        for (File file : directory.listFiles()) {
+            if (file.isFile())
+                length += file.length();
+            else
+                length += folderSize(file);
+        }
+        return length;
     }
 
     public static void copyFile(File src, File dst) throws IOException {

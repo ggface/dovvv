@@ -1,4 +1,4 @@
-package com.ggface.achivetricks;
+package com.ggface.dovvv;
 
 import android.app.Application;
 import android.content.Context;
@@ -30,6 +30,16 @@ public class App extends Application {
         ACRA.init(this);
     }
 
+    public static Boolean isDev() {
+        // DON'T TOUCH
+        if (!BuildConfig.DEBUG)
+            return false;
+
+        // SET DEV MODE AS INIT VALUE
+        return true;
+    }
+
+
     public static Resources getRes() {
         return sContext.getResources();
     }
@@ -38,15 +48,20 @@ public class App extends Application {
         Log.d(tag, message.toUpperCase(Locale.getDefault()));
     }
 
-    public static File getPIO() {
+    public static File getPIO(String packageName) {
         File sd = Environment.getExternalStorageDirectory();
         String dataPath;
-        try {
-            dataPath = sContext.getPackageManager().getPackageInfo(
-                    sContext.getPackageName(), 0).applicationInfo.dataDir;
-        } catch (PackageManager.NameNotFoundException nnf) {
-            dataPath = sContext.getPackageName();
-        }
+
+
+            try {
+                dataPath = sContext.getPackageManager().getPackageInfo(
+                        sContext.getPackageName(), 0).applicationInfo.dataDir;
+            } catch (PackageManager.NameNotFoundException nnf) {
+                dataPath = sContext.getPackageName();
+            }
+
+        if (null != packageName)
+            dataPath = dataPath.replaceFirst(sContext.getPackageName(), packageName);
 
         File dataDirectory = new File(sd, dataPath);
 

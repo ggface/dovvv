@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.widgets;
+package com.ggface.dovvv.widgets;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ggface.achivetricks.R;
+import com.ggface.dovvv.R;
 
 public class WarningToast extends Toast {
 

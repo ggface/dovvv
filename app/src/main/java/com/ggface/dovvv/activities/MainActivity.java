@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.activities;
+package com.ggface.dovvv.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,8 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 
-import com.ggface.achivetricks.R;
-import com.ggface.achivetricks.fragments.GalleryFragment;
+import com.ggface.dovvv.App;
+import com.ggface.dovvv.R;
+import com.ggface.dovvv.fragments.GalleryFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(pToolbar);
-
+        pToolbar.setLogo(R.mipmap.ic_launcher);
 //        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
 //                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
 //
@@ -70,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (App.isDev())
+            getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 

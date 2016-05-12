@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.fragments;
+package com.ggface.dovvv.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,14 +15,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.ggface.achivetricks.App;
-import com.ggface.achivetricks.R;
-import com.ggface.achivetricks.Units;
-import com.ggface.achivetricks.classes.DBHelper;
-import com.ggface.achivetricks.classes.Person;
-import com.ggface.achivetricks.classes.RequestCodes;
-import com.ggface.achivetricks.classes.Tools;
-import com.ggface.achivetricks.widgets.WarningToast;
+import com.ggface.dovvv.App;
+import com.ggface.dovvv.R;
+import com.ggface.dovvv.Units;
+import com.ggface.dovvv.classes.DBHelper;
+import com.ggface.dovvv.classes.Person;
+import com.ggface.dovvv.classes.RequestCodes;
+import com.ggface.dovvv.classes.Tools;
+import com.ggface.dovvv.widgets.WarningToast;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 

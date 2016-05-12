@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.activities;
+package com.ggface.dovvv.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,8 +7,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.ggface.achivetricks.R;
-import com.ggface.achivetricks.fragments.PersonFragment;
+import com.ggface.dovvv.R;
+import com.ggface.dovvv.fragments.PersonFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

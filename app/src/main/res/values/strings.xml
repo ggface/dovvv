@@ -1,13 +1,15 @@
 <resources>
-    <string name="app_name">Achivetricks</string>
+    <string name="app_name">dovvv</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_export">Export data</string>
     <string name="title_activity_person">Person</string>
-
+    <string name="action_import">Import data</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="export_complete">Export complete</string>
+    <string name="backup_list_made">BackUp list made</string>
     <string name="edit_lovely_note">Edit lovely note</string>
     <string name="new_lovely_note">New lovely note</string>
     <string name="person_not_found">A person not found</string>
+    <string name="data_wrote_to_database">Data wrote to database</string>
 </resources>

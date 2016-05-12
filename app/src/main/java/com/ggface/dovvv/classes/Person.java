@@ -1,9 +1,9 @@
-package com.ggface.achivetricks.classes;
+package com.ggface.dovvv.classes;
 
 import android.content.ContentValues;
 import android.graphics.Color;
 
-import com.ggface.achivetricks.Units;
+import com.ggface.dovvv.Units;
 import com.google.gson.annotations.Expose;
 
 public class Person {
@@ -33,7 +33,7 @@ public class Person {
     }
 
     public String getFilename() {
-        if (id == Units.VAR_NEW_PERSON || null == extension)
+        if (id <= Units.VAR_NEW_PERSON || null == extension )
             return null;
         return String.valueOf(id) + "." + extension;
     }

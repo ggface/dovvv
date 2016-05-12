@@ -1,4 +1,4 @@
-package com.ggface.achivetricks;
+package com.ggface.dovvv;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

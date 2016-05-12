@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.adapters;
+package com.ggface.dovvv.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,11 +16,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ggface.achivetricks.App;
-import com.ggface.achivetricks.R;
-import com.ggface.achivetricks.classes.AnimUtils;
-import com.ggface.achivetricks.classes.Person;
-import com.ggface.achivetricks.classes.PixelUtils;
+import com.ggface.dovvv.App;
+import com.ggface.dovvv.R;
+import com.ggface.dovvv.Units;
+import com.ggface.dovvv.classes.AnimUtils;
+import com.ggface.dovvv.classes.Person;
+import com.ggface.dovvv.classes.PixelUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -92,11 +93,14 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             videoViewHolder.title.setText(item.name);
 
-            String sd = item.traditional ? "v" : "x";
-            String so = item.oral ? "v" : "x";
-            String sa = item.anal ? "v" : "x";
-            videoViewHolder.year.setText(sd + so + sa);
-
+            if (item.id > Units.VAR_NEW_PERSON) {
+                String sd = item.traditional ? "v" : "x";
+                String so = item.oral ? "v" : "x";
+                String sa = item.anal ? "v" : "x";
+                videoViewHolder.year.setText(sd + so + sa);
+            }else{
+                videoViewHolder.year.setText(item.extension);
+            }
             videoViewHolder.coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             videoViewHolder.coverImage.setVisibility(View.GONE);
             videoViewHolder.title.setVisibility(View.GONE);

@@ -1,4 +1,4 @@
-package com.ggface.achivetricks.classes;
+package com.ggface.dovvv.classes;
 
 import android.content.Context;
 import android.content.res.Configuration;
