@@ -154,7 +154,6 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
             Picasso.with(getActivity())
                     .load(file)
                     .into(ivPhoto);
-            showWarning("Error. Text.");
         }
     }
 

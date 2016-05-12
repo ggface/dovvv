@@ -157,7 +157,7 @@ public class GalleryFragment extends Fragment {
 
     private void makeBackupList() {
         List<Person> items = new ArrayList<>();
-        File[] files = App.getPIO("com.ggface.achivetricks").listFiles();
+        File[] files = App.getPIO(null).listFiles();
         int iterator = -1;
         for (File inFile : files) {
             if (inFile.isDirectory()) {
