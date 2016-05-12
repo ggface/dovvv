@@ -22,7 +22,6 @@
         </activity>
         <activity
             android:name=".activities.PersonActivity"
-            android:windowSoftInputMode="adjustPan"
             android:label="@string/title_activity_person" >
         </activity>
     </application>

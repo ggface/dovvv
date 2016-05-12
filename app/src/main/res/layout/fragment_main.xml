@@ -5,16 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gvCollection"
-        style="@style/PhotoGrid"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:columnWidth="@dimen/photo_size"
-        android:numColumns="auto_fit"
-        android:scrollbars="none"
-        android:stretchMode="columnWidth" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvCollection"
+        android:focusable="true"
+        android:focusableInTouchMode="false"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

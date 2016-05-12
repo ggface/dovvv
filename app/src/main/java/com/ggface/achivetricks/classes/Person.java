@@ -1,6 +1,7 @@
 package com.ggface.achivetricks.classes;
 
 import android.content.ContentValues;
+import android.graphics.Color;
 
 import com.ggface.achivetricks.Units;
 
@@ -13,7 +14,7 @@ public class Person {
     public String name;
     public boolean oral, anal, traditional;
     public Date addDate;
-//    public Bitmap image;
+    public int color = Color.parseColor("#3F51B5");
 
     public Person() {
     }

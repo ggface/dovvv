@@ -122,7 +122,7 @@ public class EditorImagesAdapter extends BaseAdapter {
             return;
         }
         mItemHeight = height;
-        mImageViewLP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, mItemHeight);
+        mImageViewLP = new RelativeLayout.LayoutParams(mItemHeight, mItemHeight);
         notifyDataSetChanged();
     }
 

@@ -4,8 +4,8 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="@dimen/photo_size"
-        android:layout_height="@dimen/photo_size"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/ivThumb"
         android:layout_centerHorizontal="true" />
 

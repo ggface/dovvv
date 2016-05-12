@@ -1,22 +1,29 @@
 package com.ggface.achivetricks.fragments;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
 import com.ggface.achivetricks.Units;
 import com.ggface.achivetricks.activities.PersonActivity;
 import com.ggface.achivetricks.adapters.EditorImagesAdapter;
+import com.ggface.achivetricks.adapters.MediaGridAdapter;
 import com.ggface.achivetricks.classes.DBHelper;
 import com.ggface.achivetricks.classes.EditorBodyImage;
 import com.ggface.achivetricks.classes.Person;
@@ -31,6 +38,10 @@ import java.util.List;
  */
 public class GalleryFragment extends Fragment {
 
+    private enum State {
+        UNINITIALISED, LOADING, SEARCHING, LOADING_PAGE, LOADED, LOADING_DETAIL
+    }
+
     private final View.OnClickListener doneClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -41,21 +52,93 @@ public class GalleryFragment extends Fragment {
         }
     };
 
-    private GridView gvCollection;
-    private EditorImagesAdapter adapter;
-    private int mPhotoSize, mPhotoSpacing;
-    private List<EditorBodyImage> bodyViews;
+    private RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            mVisibleItemCount = mLayoutManager.getChildCount();
+            mTotalItemCount = mLayoutManager.getItemCount() - (mAdapter.isLoading() ? 1 : 0);
+            mFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
-    public GalleryFragment() {
-    }
+            if (mState == State.LOADING_PAGE) {
+                if (mTotalItemCount > mPreviousTotal) {
+                    mPreviousTotal = mTotalItemCount;
+                    mPreviousTotal = mTotalItemCount = mLayoutManager.getItemCount();
+                    setState(State.LOADED);
+                }
+            }
+
+//            if (!mEndOfListReached && !(mState == State.SEARCHING) && !(mState == State.LOADING_PAGE) && !(mState == State.LOADING) && (mTotalItemCount - mVisibleItemCount) <= (mFirstVisibleItem +
+//                    mLoadingTreshold)) {
+//
+//                mFilters.page = mPage;
+//                mCurrentCall = mProvider.getList(mItems, new MediaProvider.Filters(mFilters), mCallback);
+//
+//                mPreviousTotal = mTotalItemCount = mLayoutManager.getItemCount();
+//                setState(State.LOADING_PAGE);
+//            }
+        }
+    };
+
+    private MediaGridAdapter.OnItemClickListener mOnItemClickListener = new MediaGridAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(final View view, final Person item, final int position) {
+            Intent intent = new Intent(getActivity(), PersonActivity.class);
+                intent.putExtra(Units.ARG_INDEX, item.id);
+                startActivityForResult(intent, RequestCodes.RC_PERSON);
+            /**
+             * We shouldn't really be doing the palette loading here without any ui feedback,
+             * but it should be really quick
+             */
+//            RecyclerView.ViewHolder holder = rvCollection.getChildViewHolder(view);
+//            if (holder instanceof MediaGridAdapter.ViewHolder) {
+//                ImageView coverImage = ((MediaGridAdapter.ViewHolder) holder).getCoverImage();
+//
+//                if (coverImage.getDrawable() == null) {
+//                    showLoadingDialog(position);
+//                    return;
+//                }
+//
+//                Bitmap cover = ((BitmapDrawable) coverImage.getDrawable()).getBitmap();
+//                Palette.generateAsync(cover, 5, new Palette.PaletteAsyncListener() {
+//                    @Override
+//                    public void onGenerated(Palette palette) {
+//                        int vibrantColor = palette.getVibrantColor(-1);
+//                        int paletteColor;
+//                        if (vibrantColor == -1) {
+//                            paletteColor = palette.getMutedColor(getResources().getColor(R.color.primary));
+//                        } else {
+//                            paletteColor = vibrantColor;
+//                        }
+//                        item.color = paletteColor;
+//                        showLoadingDialog(position);
+//                    }
+//                });
+//            } else {
+//                showLoadingDialog(position);
+//            }
+
+        }
+    };
+
+    private RecyclerView rvCollection;
+//    private GridView gvCollection;
+//    private EditorImagesAdapter adapter;
+//    private int mPhotoSize, mPhotoSpacing;
+//    private List<EditorBodyImage> bodyViews;
+    private MediaGridAdapter mAdapter;
+    private GridLayoutManager mLayoutManager;
+    private Integer mColumns = 2, mRetries = 0;
+    private State mState = State.UNINITIALISED;
+
+    private int mFirstVisibleItem, mVisibleItemCount, mTotalItemCount = 0, mLoadingTreshold = mColumns * 3, mPreviousTotal = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        adapter = new EditorImagesAdapter(getActivity());
+//        adapter = new EditorImagesAdapter(getActivity());
 
-        bodyViews = new ArrayList<>();
+//        bodyViews = new ArrayList<>();
 //        DBHelper.getInstance(getActivity()).reCreate();
     }
 
@@ -69,80 +152,125 @@ public class GalleryFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mPhotoSize = getResources().getDimensionPixelSize(R.dimen.photo_size);
-        mPhotoSpacing = getResources().getDimensionPixelSize(R.dimen.photo_spacing);
+//        mPhotoSize = getResources().getDimensionPixelSize(R.dimen.photo_size);
+//        mPhotoSpacing = getResources().getDimensionPixelSize(R.dimen.photo_spacing);
 
-        gvCollection = UI.get(view, R.id.gvCollection);
-        gvCollection.setAdapter(adapter);
+        rvCollection= UI.get(view, R.id.rvCollection);
+//        gvCollection = UI.get(view, R.id.gvCollection);
+
+        mColumns = getResources().getInteger(R.integer.overview_cols);
+        mLayoutManager = new GridLayoutManager(getActivity(), mColumns);
+        rvCollection.setLayoutManager(mLayoutManager);
+
+        rvCollection.setHasFixedSize(true);
+        rvCollection.addOnScrollListener(mScrollListener);
+        //adapter should only ever be created once on fragment initialise.
+        List<Person> mItems = DBHelper.getInstance(getActivity()).read();
+        mAdapter = new MediaGridAdapter(getActivity(), mItems, mColumns);
+        mAdapter.setOnItemClickListener(mOnItemClickListener);
+        rvCollection.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(doneClickListener);
 
-        gvCollection.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (adapter.getNumColumns() == 0) {
-                    final int numColumns = (int) Math.floor(gvCollection.getWidth() / (mPhotoSize + mPhotoSpacing));
-                    if (numColumns > 0) {
-                        final int columnWidth = (gvCollection.getWidth() / numColumns) - mPhotoSpacing;
-                        adapter.setNumColumns(numColumns);
-                        adapter.setItemHeight(columnWidth);
-
-                    }
-                }
-            }
-        });
-
-        gvCollection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), PersonActivity.class);
-                intent.putExtra(Units.ARG_INDEX, adapter.getItem(position).id);
-                startActivityForResult(intent, RequestCodes.RC_PERSON);
-//                if (position == 0) {
-//                    Intent intent = new Intent(Intent.ACTION_PICK,
-//                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                    startActivityForResult(intent, RequestCodes.RC_BROWSE_PHOTO);
-//                } else {
-//                    PopupMenu popupMenu = new PopupMenu(getActivity(), view);
-//                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu_editor_gallary
-//                            , popupMenu.getMenu());
-//
-//                    popupMenu.getMenu().findItem(R.id.action_upload)
-//                            .setVisible(adapter.getItem(position).isLocal());
-//
-//                    popupMenu.setOnMenuItemClickListener(new OnPopupItemClickListener(position));
-//
-//                    popupMenu.show();
-//
+//        gvCollection.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                if (adapter.getNumColumns() == 0) {
+//                    final int numColumns = (int) Math.floor(gvCollection.getMeasuredWidth() / (mPhotoSize ));
+//                    if (numColumns > 0) {
+//                        final int columnWidth = (gvCollection.getWidth() / numColumns) ;
+//                        gvCollection.setColumnWidth(columnWidth);
+//                        adapter.setNumColumns(numColumns);
+//                        adapter.setItemHeight(columnWidth);
+//                    }
 //                }
-            }
-        });
-//        List<Person> items = new ArrayList<>();
-//        items.add(new Person("Sophia"));
-//        items.add(new Person("Emma"));
-//        items.add(new Person("Olivia"));
-//        items.add(new Person("Ava"));
-//        items.add(new Person("Isabella"));
-//        items.add(new Person("Mia"));
-//        items.add(new Person("Zoe"));
-//        items.add(new Person("Lily"));
-//        items.add(new Person("Emily"));
-//        items.add(new Person("Madelyn"));
-//        items.add(new Person("Madison"));
-//        items.add(new Person("Chloe"));
-//        items.add(new Person("Charlotte"));
-//        items.add(new Person("Aubrey"));
-        List<Person> items = DBHelper.getInstance(getActivity()).read();
-        adapter.rewrite(items);
-//        File file = getContext().getDatabasePath(DBHelper.DATABASE_NAME);
-//        UI.text(getActivity(), null != file ? file.getAbsolutePath() : "no file");
+//            }
+//        });
+
+//        gvCollection.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getActivity(), PersonActivity.class);
+//                intent.putExtra(Units.ARG_INDEX, adapter.getItem(position).id);
+//                startActivityForResult(intent, RequestCodes.RC_PERSON);
+//            }
+//        });
+//
+//        List<Person> items = DBHelper.getInstance(getActivity()).read();
+//        gvCollection.setAdapter(adapter);
+//        adapter.rewrite(items);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         List<Person> items = DBHelper.getInstance(getActivity()).read();
-        adapter.rewrite(items);
+        mAdapter.setItems(items);
+    }
+
+    private void showLoadingDialog(Integer position) {
+       // TODO: 11.05.16
+    }
+
+    private void setState(State state) {
+        if (mState == state) return;//do nothing
+        mState = state;
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (!isAdded()) return;
+
+//        ThreadUtils.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                //animate recyclerview to full alpha
+//                //		if (mRecyclerView.getAlpha() != 1.0f)
+//                //			mRecyclerView.animate().alpha(1.0f).setDuration(100).start();
+//
+//                //update loading message based on state
+//                switch (mState) {
+//                    case LOADING_DETAIL:
+//                        mLoadingMessage = R.string.loading_details;
+//                        break;
+//                    case SEARCHING:
+//                        mLoadingMessage = R.string.searching;
+//                        break;
+//                    default:
+//                        int providerMessage = mProvider.getLoadingMessage();
+//                        mLoadingMessage = providerMessage > 0 ? providerMessage : R.string.loading_data;
+//                        break;
+//                }
+//
+//                switch (mState) {
+//                    case LOADING_DETAIL:
+//                    case SEARCHING:
+//                    case LOADING:
+//                        if (mAdapter.isLoading()) mAdapter.removeLoading();
+//                        //show the progress bar
+//                        mRecyclerView.setVisibility(View.VISIBLE);
+//                        //				mRecyclerView.animate().alpha(0.5f).setDuration(500).start();
+//                        mEmptyView.setVisibility(View.GONE);
+//                        mProgressOverlay.setVisibility(View.VISIBLE);
+//                        break;
+//                    case LOADED:
+//                        if (mAdapter.isLoading()) mAdapter.removeLoading();
+//                        mProgressOverlay.setVisibility(View.GONE);
+//                        boolean hasItems = mItems.size() > 0;
+//                        //show either the recyclerview or the empty view
+//                        mRecyclerView.setVisibility(hasItems ? View.VISIBLE : View.INVISIBLE);
+//                        mEmptyView.setVisibility(hasItems ? View.GONE : View.VISIBLE);
+//                        break;
+//                    case LOADING_PAGE:
+//                        //add a loading view to the adapter
+//                        if (!mAdapter.isLoading()) mAdapter.addLoading();
+//                        mEmptyView.setVisibility(View.GONE);
+//                        mRecyclerView.setVisibility(View.VISIBLE);
+//                        break;
+//                }
+//                updateLoadingMessage();
+//            }
+//        });
     }
 }
