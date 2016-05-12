@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -206,7 +207,7 @@ public class Tools {
 //                : Units.VIEW_DATE_FORMAT, Locale.getDefault()).format(value);
 //    }
 
-    private static String getCustomDateFormat(Date value, String format) {
+    public static String getCustomDateFormat(Date value, String format) {
         return new SimpleDateFormat(format, Locale.getDefault()).format(value);
     }
 
@@ -255,6 +256,20 @@ public class Tools {
             } catch (IOException io) {
             }
         }
+    }
+
+    public static void copyFile(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dst);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
     }
 
 }

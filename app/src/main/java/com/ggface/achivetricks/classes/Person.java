@@ -4,22 +4,31 @@ import android.content.ContentValues;
 import android.graphics.Color;
 
 import com.ggface.achivetricks.Units;
-
-import java.util.Date;
+import com.google.gson.annotations.Expose;
 
 public class Person {
 
+    @Expose
     public long id;
-    public String extension, fullpath;
+
+    @Expose
+    public String extension;
+
+    @Expose
     public String name;
+
+    @Expose
     public boolean oral, anal, traditional;
-    public Date addDate;
-    public int color = Color.parseColor("#3F51B5");
+
+    public int color;
+    public String fullpath;
 
     public Person() {
+        this.color = Color.parseColor("#3F51B5");
     }
 
     public Person(String name) {
+        this();
         this.name = name;
     }
 

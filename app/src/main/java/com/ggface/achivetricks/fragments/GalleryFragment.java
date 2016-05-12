@@ -1,35 +1,34 @@
 package com.ggface.achivetricks.fragments;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
 
+import com.ggface.achivetricks.App;
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
 import com.ggface.achivetricks.Units;
 import com.ggface.achivetricks.activities.PersonActivity;
-import com.ggface.achivetricks.adapters.EditorImagesAdapter;
 import com.ggface.achivetricks.adapters.MediaGridAdapter;
 import com.ggface.achivetricks.classes.DBHelper;
-import com.ggface.achivetricks.classes.EditorBodyImage;
 import com.ggface.achivetricks.classes.Person;
 import com.ggface.achivetricks.classes.RequestCodes;
+import com.ggface.achivetricks.classes.Tools;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.List;
 
 
@@ -83,8 +82,8 @@ public class GalleryFragment extends Fragment {
         @Override
         public void onItemClick(final View view, final Person item, final int position) {
             Intent intent = new Intent(getActivity(), PersonActivity.class);
-                intent.putExtra(Units.ARG_INDEX, item.id);
-                startActivityForResult(intent, RequestCodes.RC_PERSON);
+            intent.putExtra(Units.ARG_INDEX, item.id);
+            startActivityForResult(intent, RequestCodes.RC_PERSON);
             /**
              * We shouldn't really be doing the palette loading here without any ui feedback,
              * but it should be really quick
@@ -121,7 +120,7 @@ public class GalleryFragment extends Fragment {
     };
 
     private RecyclerView rvCollection;
-//    private GridView gvCollection;
+    //    private GridView gvCollection;
 //    private EditorImagesAdapter adapter;
 //    private int mPhotoSize, mPhotoSpacing;
 //    private List<EditorBodyImage> bodyViews;
@@ -155,7 +154,7 @@ public class GalleryFragment extends Fragment {
 //        mPhotoSize = getResources().getDimensionPixelSize(R.dimen.photo_size);
 //        mPhotoSpacing = getResources().getDimensionPixelSize(R.dimen.photo_spacing);
 
-        rvCollection= UI.get(view, R.id.rvCollection);
+        rvCollection = UI.get(view, R.id.rvCollection);
 //        gvCollection = UI.get(view, R.id.gvCollection);
 
         mColumns = getResources().getInteger(R.integer.overview_cols);
@@ -163,7 +162,7 @@ public class GalleryFragment extends Fragment {
         rvCollection.setLayoutManager(mLayoutManager);
 
         rvCollection.setHasFixedSize(true);
-        rvCollection.addOnScrollListener(mScrollListener);
+//        rvCollection.addOnScrollListener(mScrollListener);
         //adapter should only ever be created once on fragment initialise.
         List<Person> mItems = DBHelper.getInstance(getActivity()).read();
         mAdapter = new MediaGridAdapter(getActivity(), mItems, mColumns);
@@ -209,14 +208,54 @@ public class GalleryFragment extends Fragment {
         mAdapter.setItems(items);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_export) {
+            exportData();
+            UI.text(getActivity(), "Export complete");
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void showLoadingDialog(Integer position) {
-       // TODO: 11.05.16
+        // TODO: 11.05.16
     }
 
     private void setState(State state) {
         if (mState == state) return;//do nothing
         mState = state;
         updateUI();
+    }
+
+    private void exportData() {
+        try {
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+                    .create();
+
+            List<Person> persons = this.mAdapter.getItems();
+            String json = gson.toJson(persons,
+                    new TypeToken<List<Person>>() {
+                    }.getType());
+
+            File folder = new File(App.getPIO(), Tools.getCustomDateFormat(new Date(), "yyyy-MM-dd HHmmss") + " backup");
+            if (!folder.exists())
+                folder.mkdirs();
+            File cookiesFile = new File(folder, "backup.json");
+            new FileOutputStream(cookiesFile).write(json.getBytes());
+
+            for (Person person : persons) {
+                if (null != person.getFilename()) {
+                    File src = App.getContext().getFileStreamPath(person.getFilename());
+                    Tools.copyFile(src, new File(folder, person.getFilename()));
+                }
+            }
+        } catch (Exception e) {
+            UI.text(getActivity(), e.getMessage());
+        }
     }
 
     private void updateUI() {

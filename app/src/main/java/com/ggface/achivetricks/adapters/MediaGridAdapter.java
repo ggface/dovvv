@@ -87,7 +87,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (getItemViewType(position) == NORMAL) {
             final ViewHolder videoViewHolder = (ViewHolder) viewHolder;
             final OverviewItem overviewItem = getItem(position);
-            Person item = overviewItem.media;
+            Person item = overviewItem.person;
 
 
             videoViewHolder.title.setText(item.name);
@@ -207,6 +207,17 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onItemClick(View v, Person item, int position);
     }
 
+    public List<Person> getItems() {
+        List<Person> exportSource = null;
+        if (null != mItems && mItems.size() > 0) {
+            exportSource = new ArrayList<>(mItems.size());
+            for (OverviewItem item : mItems) {
+                exportSource.add(item.person);
+            }
+        }
+        return exportSource;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         View itemView;
@@ -244,7 +255,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onClick(View view) {
             if (mItemClickListener != null) {
                 int position = getPosition();
-                Person item = getItem(position).media;
+                Person item = getItem(position).person;
                 mItemClickListener.onItemClick(view, item, position);
             }
         }
@@ -264,12 +275,12 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     class OverviewItem {
-        Person media;
+        Person person;
         boolean isImageError = true;
         boolean isLoadingItem = false;
 
         OverviewItem(Person media) {
-            this.media = media;
+            this.person = media;
         }
 
         OverviewItem(boolean loading) {
