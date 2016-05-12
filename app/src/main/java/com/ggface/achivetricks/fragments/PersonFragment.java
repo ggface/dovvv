@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.ggface.achivetricks.App;
 import com.ggface.achivetricks.R;
 import com.ggface.achivetricks.UI;
 import com.ggface.achivetricks.Units;
@@ -162,11 +163,13 @@ public class PersonFragment extends Fragment {
             }
             etName.append(mPerson.name);
 
-            if (null != mPerson.extension)
-                Picasso.with(getActivity())
-                        .load(new File(mPerson.extension))
-                        .into(ivPhoto);
+            if (null != mPerson.getFilename()) {
+                File file = App.getContext().getFileStreamPath(mPerson.getFilename());
 
+                Picasso.with(getActivity())
+                        .load(file)
+                        .into(ivPhoto);
+            }
             cbDefault.setChecked(mPerson.traditional);
             cbOral.setChecked(mPerson.oral);
             cbAnal.setChecked(mPerson.anal);

@@ -187,7 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
             int pussyColIndex = c.getColumnIndex("pussy");
             int analColIndex = c.getColumnIndex("anal");
             int oralColIndex = c.getColumnIndex("oral");
-//            int photoColIndex = c.getColumnIndex("girl_photo");
+            int extColIndex = c.getColumnIndex("ext");
             item = new Person();
             item.id = c.getInt(idColIndex);
             item.name = c.getString(nameColIndex);
@@ -195,7 +195,7 @@ public class DBHelper extends SQLiteOpenHelper {
             item.traditional = c.getInt(pussyColIndex) == 1;
             item.anal = c.getInt(analColIndex) == 1;
             item.oral = c.getInt(oralColIndex) == 1;
-
+            item.extension = c.getString(extColIndex);
 //            byte[] byteArray = c.getBlob(photoColIndex);
 //            if (byteArray != null)
 //                item.image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
