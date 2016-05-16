@@ -1,12 +1,17 @@
 package com.ggface.dovvv.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +38,8 @@ import butterknife.ButterKnife;
 
 public class PersonFragment extends Fragment implements WarningToast.OnToastListener {
 
+    private static final int REQUEST_WRITE_STORAGE = 112;
+
     private final View.OnClickListener doneClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -48,12 +55,21 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
             }
 
             if (null != mPerson.fullpath) {
-                String extension = Tools.writePhoto(mPerson.id, new File(mPerson.fullpath));
-                if (null != extension)
-                    mPerson.extension = extension;
-                else {
-                    showWarning("Error. Copy file failed.");
-                    return;
+                boolean hasPermission = (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+
+                if (!hasPermission) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_WRITE_STORAGE);
+                } else {
+                    String extension = Tools.writePhoto(mPerson.id, new File(mPerson.fullpath));
+                    if (null != extension)
+                        mPerson.extension = extension;
+                    else {
+                        showWarning("Error. Copy file failed.");
+                        return;
+                    }
                 }
             }
 
@@ -195,6 +211,50 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
             mPerson = new Person();
             mPerson.id = Units.VAR_NEW_PERSON;
             Tools.getBar(this).setTitle(R.string.new_lovely_note);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    String extension = Tools.writePhoto(mPerson.id, new File(mPerson.fullpath));
+                    if (null != extension)
+                        mPerson.extension = extension;
+                    else {
+                        showWarning("Error. Copy file failed.");
+                        return;
+                    }
+                    DBHelper.getInstance(getActivity()).update(mPerson);
+                    //reload my activity with permission granted or use the features what required the permission
+                } else {
+                    mPerson.fullpath = null;
+                    showWarning("The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission.");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (null != mPerson) {
+            outState.putString(Units.ARG_JSON, mPerson.toJson());
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (Tools.containsString(savedInstanceState, Units.ARG_JSON)) {
+            String json = savedInstanceState.getString(Units.ARG_JSON);
+            this.mPerson = new Gson().fromJson(json, Person.class);
+            if (null != mPerson.fullpath)
+                Picasso.with(getActivity())
+                        .load(new File(mPerson.fullpath))
+                        .into(ivPhoto);
         }
     }
 

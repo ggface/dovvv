@@ -246,6 +246,7 @@ public class Tools {
             os.close();
             return extension;
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         } finally {
             try {
@@ -254,6 +255,7 @@ public class Tools {
                 if (os != null)
                     os.close();
             } catch (IOException io) {
+                io.printStackTrace();
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.graphics.Color;
 
 import com.ggface.dovvv.Units;
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 
 public class Person {
@@ -33,7 +34,7 @@ public class Person {
     }
 
     public String getFilename() {
-        if (id <= Units.VAR_NEW_PERSON || null == extension )
+        if (id <= Units.VAR_NEW_PERSON || null == extension)
             return null;
         return String.valueOf(id) + "." + extension;
     }
@@ -53,4 +54,9 @@ public class Person {
 //        }
         return cv;
     }
+
+    public String toJson() {
+        return new Gson().toJson(this, Person.class);
+    }
+
 }
