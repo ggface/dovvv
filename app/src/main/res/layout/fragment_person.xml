@@ -1,3 +1,11 @@
+<!--
+  ~ Copyright (c) 2016. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -5,82 +13,85 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ggface.dovvv.fragments.PersonFragment">
 
-    <ImageView
-        android:id="@+id/ivPhoto"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linearLayout">
 
-    <CheckBox
-        android:id="@+id/cbDefault"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="8=v)" />
+        <ImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <CheckBox
-        android:id="@+id/cbOral"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_editor_insert_photo" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:text="Click here to attach some photo" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/cbDefault"
-        android:text="8=o:" />
+        android:background="@drawable/bg_rounded_1"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/linearLayout">
 
-    <CheckBox
-        android:id="@+id/cbAnal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/cbOral"
-        android:text="8=((" />
+        <CheckBox
+            android:id="@+id/cbDefault"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="8=v)"
+            android:layout_marginBottom="6dp" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_editor_insert_photo" />
+        <CheckBox
+            android:id="@+id/cbOral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/cbDefault"
+            android:text="8=o:"
+            android:layout_marginBottom="6dp" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView"
-        android:layout_centerHorizontal="true"
-        android:text="Click to attach a photo" />
+        <CheckBox
+            android:id="@+id/cbAnal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/cbOral"
+            android:text="8=((" />
 
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:switchPadding="8dp"
-        android:text="standart"
-        android:visibility="invisible" />
-
-    <Switch
-        android:id="@+id/switch2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/switch1"
-        android:layout_alignRight="@+id/switch1"
-        android:layout_below="@+id/switch1"
-        android:switchPadding="8dp"
-        android:text="anal"
-        android:visibility="invisible" />
-
-    <Switch
-        android:id="@+id/switch3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/switch2"
-        android:layout_alignRight="@+id/switch2"
-        android:layout_below="@+id/switch2"
-        android:switchPadding="8dp"
-        android:text="oral"
-        android:visibility="invisible" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etName"
+            android:layout_below="@+id/cbAnal"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:singleLine="false"
+            android:hint="Enter a name" />
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -93,15 +104,4 @@
         android:layout_marginRight="16dp"
         android:src="@drawable/ic_action_action_done" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/etName"
-        android:layout_below="@+id/cbAnal"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:inputType="textCapSentences"
-        android:maxLines="1" />
 </RelativeLayout>

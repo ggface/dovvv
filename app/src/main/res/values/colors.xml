@@ -10,4 +10,5 @@
     <color name="divider">#B6B6B6</color>
 
     <color name="overlay">#33000000</color>
+    <color name="control_box">#535353</color>
 </resources>
