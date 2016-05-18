@@ -121,8 +121,8 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     @Bind(R.id.imageView)
     ImageView btnAddPhoto;
 
-    @Bind(R.id.fab)
-    FloatingActionButton fab;
+//    @Bind(R.id.fab)
+//    FloatingActionButton fab;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -137,7 +137,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
 
         wToast = new WarningToast(getActivity());
 
-        fab.setOnClickListener(doneClickListener);
+//        fab.setOnClickListener(doneClickListener);
         btnAddPhoto.setOnClickListener(onClickListener);
         cbDefault.setOnClickListener(onClickListener);
         cbAnal.setOnClickListener(onClickListener);

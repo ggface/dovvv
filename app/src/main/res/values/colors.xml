@@ -11,4 +11,8 @@
 
     <color name="overlay">#33000000</color>
     <color name="control_box">#535353</color>
+
+    <color name="colorPrimary">#2C7873</color>
+    <color name="colorPrimaryDark">#004445</color>
+    <color name="colorAccent">#6FB98F</color>
 </resources>
