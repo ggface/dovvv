@@ -100,7 +100,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_action_action_done"
+        app:menu_icon="@drawable/ic_action_action_done"
         app:fab_size="normal"
         app:menu_colorNormal="@color/colorPrimaryDark"
         app:menu_colorPressed="@color/colorPrimaryDark"

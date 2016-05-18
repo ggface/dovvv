@@ -1,6 +1,10 @@
 package com.ggface.dovvv.fragments;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,13 +12,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,12 +26,14 @@ import android.widget.Toast;
 
 import com.ggface.dovvv.App;
 import com.ggface.dovvv.R;
+import com.ggface.dovvv.UI;
 import com.ggface.dovvv.Units;
 import com.ggface.dovvv.classes.DBHelper;
 import com.ggface.dovvv.classes.Person;
 import com.ggface.dovvv.classes.RequestCodes;
 import com.ggface.dovvv.classes.Tools;
 import com.ggface.dovvv.widgets.WarningToast;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -35,48 +41,11 @@ import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PersonFragment extends Fragment implements WarningToast.OnToastListener {
 
     private static final int REQUEST_WRITE_STORAGE = 112;
-
-    private final View.OnClickListener doneClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mPerson.name = etName.getText().toString();
-
-            if (Units.VAR_NEW_PERSON == mPerson.id) {
-                mPerson.id = DBHelper.getInstance(getActivity()).insert(mPerson);
-            }
-
-            if (Units.VAR_NEW_PERSON == mPerson.id) {
-                showWarning("Error. Insert a row to database failed.");
-                return;
-            }
-
-            if (null != mPerson.fullpath) {
-                boolean hasPermission = (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-
-                if (!hasPermission) {
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            REQUEST_WRITE_STORAGE);
-                } else {
-                    String extension = Tools.writePhoto(mPerson.id, new File(mPerson.fullpath));
-                    if (null != extension)
-                        mPerson.extension = extension;
-                    else {
-                        showWarning("Error. Copy file failed.");
-                        return;
-                    }
-                }
-            }
-
-            DBHelper.getInstance(getActivity()).update(mPerson);
-            getActivity().finish();
-        }
-    };
 
     private final View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -121,8 +90,8 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     @Bind(R.id.imageView)
     ImageView btnAddPhoto;
 
-//    @Bind(R.id.fab)
-//    FloatingActionButton fab;
+    @Bind(R.id.menu)
+    FloatingActionMenu fMenu;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -136,8 +105,8 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
         ButterKnife.bind(this, view);
 
         wToast = new WarningToast(getActivity());
+        fMenu.setClosedOnTouchOutside(true);
 
-//        fab.setOnClickListener(doneClickListener);
         btnAddPhoto.setOnClickListener(onClickListener);
         cbDefault.setOnClickListener(onClickListener);
         cbAnal.setOnClickListener(onClickListener);
@@ -212,6 +181,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
             mPerson.id = Units.VAR_NEW_PERSON;
             Tools.getBar(this).setTitle(R.string.new_lovely_note);
         }
+        createCustomAnimation();
     }
 
     @Override
@@ -267,5 +237,83 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     @Override
     public void hide() {
         wToast.cancel();
+    }
+
+    private void createCustomAnimation() {
+        AnimatorSet set = new AnimatorSet();
+
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+
+        scaleOutX.setDuration(50);
+        scaleOutY.setDuration(50);
+
+        scaleInX.setDuration(150);
+        scaleInY.setDuration(150);
+
+        scaleInX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                fMenu.getMenuIconView().setImageResource(fMenu.isOpened()
+                        ? R.drawable.ic_action_navigation_close : R.drawable.ic_action_navigation_menu);
+            }
+        });
+
+        set.play(scaleOutX).with(scaleOutY);
+        set.play(scaleInX).with(scaleInY).after(scaleOutX);
+        set.setInterpolator(new OvershootInterpolator(2));
+
+        fMenu.setIconToggleAnimatorSet(set);
+    }
+
+    @OnClick(R.id.menu_done)
+    void onClickDone() {
+        mPerson.name = etName.getText().toString();
+
+        if (Units.VAR_NEW_PERSON == mPerson.id) {
+            mPerson.id = DBHelper.getInstance(getActivity()).insert(mPerson);
+        }
+
+        if (Units.VAR_NEW_PERSON == mPerson.id) {
+            showWarning("Error. Insert a row to database failed.");
+            return;
+        }
+
+        if (null != mPerson.fullpath) {
+            boolean hasPermission = (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_STORAGE);
+            } else {
+                String extension = Tools.writePhoto(mPerson.id, new File(mPerson.fullpath));
+                if (null != extension)
+                    mPerson.extension = extension;
+                else {
+                    showWarning("Error. Copy file failed.");
+                    return;
+                }
+            }
+        }
+
+        DBHelper.getInstance(getActivity()).update(mPerson);
+        getActivity().finish();
+    }
+
+    @OnClick(R.id.menu_refresh)
+    void onClickRefresh() {
+        mPerson.extension = null;
+        mPerson.fullpath = null;
+        ivPhoto.setImageBitmap(null);
+    }
+
+    @OnClick(R.id.menu_remove)
+    void onClickRemove() {
+        UI.text(getActivity(), "remove click");
     }
 }

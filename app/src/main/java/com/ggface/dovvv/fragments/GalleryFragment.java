@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -79,8 +80,11 @@ public class GalleryFragment extends Fragment {
         setHasOptionsMenu(true);
         mColumns = getResources().getInteger(R.integer.overview_cols);
         List<Person> mItems = DBHelper.getInstance(getActivity()).read();
+
         mAdapter = new MediaGridAdapter(getActivity(), mItems, mColumns);
         mAdapter.setOnItemClickListener(mOnItemClickListener);
+
+        removeTrash();
 //        DBHelper.getInstance(getActivity()).reCreate();
     }
 
@@ -126,6 +130,18 @@ public class GalleryFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void removeTrash() {
+        List<File> existsPhotos = new ArrayList<>();
+        List<File> allPhotos = Arrays.asList(App.getContext().getFilesDir().listFiles());
+        if (null != mAdapter.getItems())
+            for (Person person : mAdapter.getItems()) {
+                if (null != person.getFilename()) {
+                    File src = App.getContext().getFileStreamPath(person.getFilename());
+                    existsPhotos.add(src);
+                }
+            }
     }
 
     private void exportData() {
@@ -186,7 +202,7 @@ public class GalleryFragment extends Fragment {
 
             for (Person p : persons) {
                 if (p.extension != null) {
-                    File photo = new File(dir + File.separator + p.id + '.' + p.extension);
+                    File photo = new File(dir + File.separator + "dovvv_photo_" + p.id + '.' + p.extension);
                     if (photo.exists()) {
                         Tools.writePhoto(p.id, photo.getAbsoluteFile());
                     }

@@ -230,7 +230,7 @@ public class Tools {
     public static String writePhoto(long index, File src) {
         String filenameArray[] = src.getName().split("\\.");
         String extension = filenameArray[filenameArray.length - 1];
-        String newFilename = String.valueOf(index) + '.' + extension;
+        String newFilename = "dovvv_photo_" + String.valueOf(index) + '.' + extension;
 
         InputStream is = null;
         FileOutputStream os = null;

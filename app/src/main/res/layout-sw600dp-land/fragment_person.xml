@@ -7,10 +7,10 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ggface.dovvv.fragments.PersonFragment">
 
     <ImageView
@@ -34,34 +34,34 @@
         android:layout_centerHorizontal="true"
         android:text="Click here to attach some photo" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        app:borderWidth="0dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_action_action_done" />
+    <!--<android.support.design.widget.FloatingActionButton-->
+    <!--android:id="@+id/fab"-->
+    <!--app:borderWidth="0dp"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_marginBottom="16dp"-->
+    <!--android:layout_marginRight="16dp"-->
+    <!--android:src="@drawable/ic_action_action_done" />-->
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@drawable/bg_rounded_1"
         android:layout_margin="16dp"
+        android:background="@drawable/bg_rounded_1"
+        android:orientation="vertical"
         android:padding="8dp">
 
         <CheckBox
             android:id="@+id/cbDefault"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="8=v)"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="6dp"
+            android:text="8=v)" />
 
         <CheckBox
             android:id="@+id/cbOral"
@@ -70,8 +70,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/cbDefault"
-            android:text="8=o:"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="6dp"
+            android:text="8=o:" />
 
         <CheckBox
             android:id="@+id/cbAnal"
@@ -83,17 +83,57 @@
             android:text="8=((" />
 
         <EditText
+            android:id="@+id/etName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/etName"
-            android:layout_below="@+id/cbAnal"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/cbAnal"
+            android:hint="Enter a name"
             android:inputType="textCapSentences"
             android:maxLines="1"
-            android:singleLine="false"
-            android:hint="Enter a name" />
+            android:singleLine="false" />
     </LinearLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="8dp"
+        app:menu_animationDelayPerItem="0"
+        app:fab_size="normal"
+        app:menu_colorNormal="@color/accent"
+        app:menu_colorPressed="#E53935"
+        app:menu_colorRipple="#B71C1C"
+        app:menu_icon="@drawable/ic_action_navigation_menu">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_action_done"
+            app:fab_label="Done"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_editor_insert_photo"
+            app:fab_label="Refresh"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_action_delete"
+            app:fab_label="Remove"
+            app:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
 </RelativeLayout>

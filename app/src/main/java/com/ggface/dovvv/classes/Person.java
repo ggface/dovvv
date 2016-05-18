@@ -36,7 +36,7 @@ public class Person {
     public String getFilename() {
         if (id <= Units.VAR_NEW_PERSON || null == extension)
             return null;
-        return String.valueOf(id) + "." + extension;
+        return "dovvv_photo_" + String.valueOf(id) + "." + extension;
     }
 
     public ContentValues toDB() {

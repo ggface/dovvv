@@ -24,7 +24,7 @@
         <activity
             android:name="com.ggface.dovvv.activities.PersonActivity"
             android:label="@string/title_activity_person"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:windowSoftInputMode="adjustPan|stateHidden" />
     </application>
 
 </manifest>
