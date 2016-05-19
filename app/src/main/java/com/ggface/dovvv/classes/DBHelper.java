@@ -11,7 +11,7 @@ import com.ggface.dovvv.App;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBHelper extends SQLiteOpenHelper {
+public class DBHelper extends SQLiteOpenHelper implements IRoom {
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "pHunters.db";
@@ -67,23 +67,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return theDb;
     }
 
-    public long insert(Person instance) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        long id = db.insert(TABLE_NAME, null, instance.toDB());
-        db.close();
-        return id;
-    }
-
-    public long update(Person instance) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        String[] args = new String[]{String.valueOf(instance.id)};
-        db.update(TABLE_NAME, instance.toDB(), "_id=?", args);
-
-        db.close();
-        return -1;
-    }
-
+    @Override
     public List<Person> read() {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -121,6 +105,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    @Override
     public Person select(long id) {
         Person item = null;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -150,6 +135,23 @@ public class DBHelper extends SQLiteOpenHelper {
 
         c.close();
         return item;
+    }
 
+    @Override
+    public long insert(Person instance) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long id = db.insert(TABLE_NAME, null, instance.toDB());
+        db.close();
+        return id;
+    }
+
+    @Override
+    public void update(Person instance) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String[] args = new String[]{String.valueOf(instance.id)};
+        db.update(TABLE_NAME, instance.toDB(), "_id=?", args);
+
+        db.close();
     }
 }

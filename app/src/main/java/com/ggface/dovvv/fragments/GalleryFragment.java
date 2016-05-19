@@ -19,8 +19,8 @@ import com.ggface.dovvv.Units;
 import com.ggface.dovvv.activities.PersonActivity;
 import com.ggface.dovvv.adapters.MediaGridAdapter;
 import com.ggface.dovvv.classes.DBHelper;
+import com.ggface.dovvv.classes.IRoom;
 import com.ggface.dovvv.classes.Person;
-import com.ggface.dovvv.classes.RequestCodes;
 import com.ggface.dovvv.classes.Tools;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,7 +45,7 @@ public class GalleryFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(), PersonActivity.class);
-            startActivityForResult(intent, RequestCodes.RC_PERSON);
+            startActivityForResult(intent, Units.RC_PERSON);
         }
     };
 
@@ -56,7 +56,7 @@ public class GalleryFragment extends Fragment {
             if (Units.VAR_NEW_PERSON < item.id) {
                 Intent intent = new Intent(getActivity(), PersonActivity.class);
                 intent.putExtra(Units.ARG_INDEX, item.id);
-                startActivityForResult(intent, RequestCodes.RC_PERSON);
+                startActivityForResult(intent, Units.RC_PERSON);
             } else {
                 importData(item.fullpath);
                 UI.text(getActivity(), getString(R.string.data_wrote_to_database));
@@ -79,7 +79,7 @@ public class GalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mColumns = getResources().getInteger(R.integer.overview_cols);
-        List<Person> mItems = DBHelper.getInstance(getActivity()).read();
+        List<Person> mItems = getRoom().read();
 
         mAdapter = new MediaGridAdapter(getActivity(), mItems, mColumns);
         mAdapter.setOnItemClickListener(mOnItemClickListener);
@@ -111,7 +111,7 @@ public class GalleryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        List<Person> items = DBHelper.getInstance(getActivity()).read();
+        List<Person> items = getRoom().read();
         mAdapter.setItems(items);
     }
 
@@ -130,6 +130,10 @@ public class GalleryFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private IRoom getRoom(){
+        return DBHelper.getInstance(getActivity());
     }
 
     private void removeTrash() {
@@ -207,7 +211,7 @@ public class GalleryFragment extends Fragment {
                         Tools.writePhoto(p.id, photo.getAbsoluteFile());
                     }
                 }
-                DBHelper.getInstance(getActivity()).insert(p);
+                getRoom().insert(p);
             }
             mAdapter.setItems(persons);
         } catch (Exception e) {

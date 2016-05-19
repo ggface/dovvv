@@ -24,6 +24,20 @@ public class Person {
     public int color;
     public String fullpath;
 
+    public static Person clone(Person instance){
+        Person person = new Person();
+        person.id = instance.id;
+        person.name = instance.name;
+
+        person.traditional = instance.traditional;
+        person.oral = instance.oral;
+        person.anal = instance.anal;
+
+        person.extension = instance.extension;
+        person.fullpath = instance.fullpath;
+        return person;
+    }
+
     public Person() {
         this.color = Color.parseColor("#3F51B5");
     }
