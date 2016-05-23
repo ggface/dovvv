@@ -11,4 +11,6 @@ public interface IRoom {
     long insert(Person instance);
 
     void update(Person instance);
+
+    void remove(Person instance);
 }

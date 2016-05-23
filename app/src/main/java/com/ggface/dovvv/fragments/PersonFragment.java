@@ -26,9 +26,9 @@ import android.widget.Toast;
 
 import com.ggface.dovvv.App;
 import com.ggface.dovvv.R;
-import com.ggface.dovvv.UI;
 import com.ggface.dovvv.Units;
 import com.ggface.dovvv.classes.DBHelper;
+import com.ggface.dovvv.classes.IRoom;
 import com.ggface.dovvv.classes.Person;
 import com.ggface.dovvv.classes.Tools;
 import com.ggface.dovvv.widgets.WarningToast;
@@ -152,7 +152,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
             Tools.getBar(this).setTitle(this.mPerson.name);
         } else if (Tools.containsLong(bundle, Units.ARG_INDEX)) {
             long id = bundle.getLong(Units.ARG_INDEX);
-            mPerson = DBHelper.getInstance(getActivity()).select(id);
+            mPerson = getRoom().select(id);
 
             if (null == mPerson) {
                 showWarning(getString(R.string.person_not_found));
@@ -194,7 +194,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
                         showWarning("Error. Copy file failed.");
                         return;
                     }
-                    DBHelper.getInstance(getActivity()).update(mPerson);
+                    getRoom().update(mPerson);
                     //reload my activity with permission granted or use the features what required the permission
                 } else {
                     mPerson.fullpath = null;
@@ -271,7 +271,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
         mPerson.name = etName.getText().toString();
 
         if (Units.VAR_NEW_PERSON == mPerson.id) {
-            mPerson.id = DBHelper.getInstance(getActivity()).insert(mPerson);
+            mPerson.id = getRoom().insert(mPerson);
         }
 
         if (Units.VAR_NEW_PERSON == mPerson.id) {
@@ -298,7 +298,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
             }
         }
 
-        DBHelper.getInstance(getActivity()).update(mPerson);
+        getRoom().update(mPerson);
         getActivity().finish();
     }
 
@@ -311,6 +311,11 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
 
     @OnClick(R.id.menu_remove)
     void onClickRemove() {
-        UI.text(getActivity(), "remove click");
+        getRoom().remove(mPerson);
+        getActivity().finish();
+    }
+
+    private IRoom getRoom() {
+        return DBHelper.getInstance(getActivity());
     }
 }

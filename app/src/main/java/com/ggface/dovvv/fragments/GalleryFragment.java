@@ -194,6 +194,8 @@ public class GalleryFragment extends Fragment {
 
     private void importData(String srcPath) {
         try {
+            DBHelper.getInstance(getActivity()).clear();
+
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation().create();
 
