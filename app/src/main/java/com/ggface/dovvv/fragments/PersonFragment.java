@@ -87,7 +87,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     @Bind(R.id.imageView)
     ImageView btnAddPhoto;
 
-    @Bind(R.id.menu)
+    @Bind(R.id.fabMenu)
     FloatingActionMenu fMenu;
 
     @Override

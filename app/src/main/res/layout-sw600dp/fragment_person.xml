@@ -34,17 +34,6 @@
         android:layout_centerHorizontal="true"
         android:text="Click here to attach some photo" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        app:borderWidth="0dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_action_action_done" />
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="320dp"
@@ -96,4 +85,44 @@
             android:singleLine="false"
             android:hint="Enter a name" />
     </LinearLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="8dp"
+        app:menu_animationDelayPerItem="0"
+        app:fab_size="normal"
+        app:menu_colorNormal="@color/accent"
+        app:menu_colorPressed="#E53935"
+        app:menu_colorRipple="#B71C1C"
+        app:menu_icon="@drawable/ic_action_navigation_menu">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_action_done"
+            app:fab_label="Done"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_editor_insert_photo"
+            app:fab_label="Refresh"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_action_delete"
+            app:fab_label="Remove"
+            app:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
 </RelativeLayout>
