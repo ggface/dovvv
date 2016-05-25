@@ -32,6 +32,7 @@ import com.ggface.dovvv.classes.IRoom;
 import com.ggface.dovvv.classes.Person;
 import com.ggface.dovvv.classes.Tools;
 import com.ggface.dovvv.widgets.WarningToast;
+import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -103,11 +104,22 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
 
         wToast = new WarningToast(getActivity());
         fMenu.setClosedOnTouchOutside(true);
+        fMenu.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
+            @Override
+            public void onMenuToggle(boolean opened) {
+                FloatingActionButton fab = (FloatingActionButton) fMenu.findViewById(R.id.menu_remove);
+                if (null == fab)
+                    return;
 
-        //TODO
-        if (mPerson.id == Units.VAR_NEW_PERSON)
-            fMenu.findViewById(R.id.menu_remove).setVisibility(View.GONE);
+                fab.setEnabled(mPerson.id != Units.VAR_NEW_PERSON);
 
+                fab = (FloatingActionButton) fMenu.findViewById(R.id.menu_refresh);
+                if (null == fab)
+                    return;
+
+                fab.setEnabled(null != mPerson.getFilename());
+            }
+        });
 
         btnAddPhoto.setOnClickListener(onClickListener);
         cbDefault.setOnClickListener(onClickListener);
