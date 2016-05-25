@@ -104,6 +104,11 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
         wToast = new WarningToast(getActivity());
         fMenu.setClosedOnTouchOutside(true);
 
+        //TODO
+        if (mPerson.id == Units.VAR_NEW_PERSON)
+            fMenu.findViewById(R.id.menu_remove).setVisibility(View.GONE);
+
+
         btnAddPhoto.setOnClickListener(onClickListener);
         cbDefault.setOnClickListener(onClickListener);
         cbAnal.setOnClickListener(onClickListener);

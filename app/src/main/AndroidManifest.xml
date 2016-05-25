@@ -24,6 +24,7 @@
         <activity
             android:name="com.ggface.dovvv.activities.PersonActivity"
             android:label="@string/title_activity_person"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan|stateHidden" />
     </application>
 
