@@ -45,6 +45,9 @@ public class Person {
     public Person(String name) {
         this();
         this.name = name;
+//        this.traditional = true;
+//        this.oral = true;
+//        this.anal = true;
     }
 
     public String getFilename() {

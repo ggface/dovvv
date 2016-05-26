@@ -82,6 +82,22 @@ public class GalleryFragment extends Fragment {
         mColumns = getResources().getInteger(R.integer.overview_cols);
         List<Person> mItems = getRoom().read();
 
+//        List<Person> mItems = new ArrayList<>();
+//        mItems.add(new Person("Sophia"));
+//        mItems.add(new Person("Emma"));
+//        mItems.add(new Person("Olivia"));
+//        mItems.add(new Person("Ava"));
+//        mItems.add(new Person("Isabella"));
+//        mItems.add(new Person("Mia"));
+//        mItems.add(new Person("Zoe"));
+//        mItems.add(new Person("Lily"));
+//        mItems.add(new Person("Emily"));
+//        mItems.add(new Person("Madelyn"));
+//        mItems.add(new Person("Madison"));
+//        mItems.add(new Person("Chloe"));
+//        mItems.add(new Person("Charlotte"));
+//        mItems.add(new Person("Aubrey"));
+
         mAdapter = new MediaGridAdapter(getActivity(), mItems, mColumns);
         mAdapter.setOnItemClickListener(mOnItemClickListener);
 
