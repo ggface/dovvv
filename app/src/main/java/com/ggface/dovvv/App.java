@@ -36,7 +36,7 @@ public class App extends Application {
             return false;
 
         // SET DEV MODE AS INIT VALUE
-        return true;
+        return !true;
     }
 
 
