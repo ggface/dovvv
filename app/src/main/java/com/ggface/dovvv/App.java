@@ -15,7 +15,7 @@ import java.util.Locale;
 
 
 @ReportsCrashes(
-        formUri = "https://collector.tracepot.com/09fc05db"
+        formUri = "https://collector.tracepot.com/494237a9"
 )
 public class App extends Application {
 

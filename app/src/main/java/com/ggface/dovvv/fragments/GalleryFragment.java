@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -132,13 +133,13 @@ public class GalleryFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private IRoom getRoom(){
+    private IRoom getRoom() {
         return DBHelper.getInstance(getActivity());
     }
 
     private void removeTrash() {
         List<File> existsPhotos = new ArrayList<>();
-        List<File> allPhotos = Arrays.asList(App.getContext().getFilesDir().listFiles());
+
         if (null != mAdapter.getItems())
             for (Person person : mAdapter.getItems()) {
                 if (null != person.getFilename()) {
@@ -146,6 +147,21 @@ public class GalleryFragment extends Fragment {
                     existsPhotos.add(src);
                 }
             }
+
+        List<File> allFiles = Arrays.asList(App.getContext().getFilesDir().listFiles());
+
+        if (null != allFiles) {
+            Iterator<File> it = allFiles.iterator();
+            while (it.hasNext()) {
+                File file = it.next();
+                String filename = file.getName();
+                if (filename.contains("dovvv_photo_")) {
+                    if (!existsPhotos.contains(file))
+                        file.delete();
+                }
+            }
+        }
+        UI.text(getActivity(), "Welcome");
     }
 
     private void exportData() {

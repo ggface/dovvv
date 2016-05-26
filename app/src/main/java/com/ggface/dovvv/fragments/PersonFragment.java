@@ -68,7 +68,7 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     };
 
     private Toast wToast;
-    private Person mPerson, srcPerson;
+    private Person mPerson;
 
     @Bind(R.id.ivPhoto)
     ImageView ivPhoto;
@@ -329,6 +329,11 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     @OnClick(R.id.menu_remove)
     void onClickRemove() {
         getRoom().remove(mPerson);
+        if (null != mPerson.getFilename()) {
+            File photo = new File(mPerson.getFilename());
+            if (photo.exists())
+                photo.delete();
+        }
         getActivity().finish();
     }
 
