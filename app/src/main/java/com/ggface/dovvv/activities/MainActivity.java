@@ -10,7 +10,7 @@ import com.ggface.dovvv.App;
 import com.ggface.dovvv.R;
 import com.ggface.dovvv.fragments.GalleryFragment;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
 //    private static final int REQUEST_WRITE_STORAGE = 112;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar pToolbar;
 
     @Override
@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(pToolbar);
-        pToolbar.setLogo(R.mipmap.ic_launcher);
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
+//        pToolbar.setLogo();
 //        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
 //                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
 //

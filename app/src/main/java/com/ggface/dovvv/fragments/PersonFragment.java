@@ -39,7 +39,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -70,25 +70,25 @@ public class PersonFragment extends Fragment implements WarningToast.OnToastList
     private Toast wToast;
     private Person mPerson;
 
-    @Bind(R.id.ivPhoto)
+    @BindView(R.id.ivPhoto)
     ImageView ivPhoto;
 
-    @Bind(R.id.cbDefault)
+    @BindView(R.id.cbDefault)
     CheckBox cbDefault;
 
-    @Bind(R.id.cbAnal)
+    @BindView(R.id.cbAnal)
     CheckBox cbAnal;
 
-    @Bind(R.id.cbOral)
+    @BindView(R.id.cbOral)
     CheckBox cbOral;
 
-    @Bind(R.id.etName)
+    @BindView(R.id.etName)
     EditText etName;
 
-    @Bind(R.id.imageView)
+    @BindView(R.id.imageView)
     ImageView btnAddPhoto;
 
-    @Bind(R.id.fabMenu)
+    @BindView(R.id.fabMenu)
     FloatingActionMenu fMenu;
 
     @Override

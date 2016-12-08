@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -225,13 +225,13 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         View itemView;
-        @Bind(R.id.focus_overlay)
+        @BindView(R.id.focus_overlay)
         View focusOverlay;
-        @Bind(R.id.cover_image)
+        @BindView(R.id.cover_image)
         ImageView coverImage;
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         TextView title;
-        @Bind(R.id.year)
+        @BindView(R.id.year)
         TextView year;
 
         private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {

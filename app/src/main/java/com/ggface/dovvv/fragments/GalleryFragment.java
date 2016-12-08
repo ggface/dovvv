@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class GalleryFragment extends Fragment {
@@ -69,10 +69,10 @@ public class GalleryFragment extends Fragment {
     private GridLayoutManager mLayoutManager;
     private Integer mColumns = 2;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fab;
 
-    @Bind(R.id.rvCollection)
+    @BindView(R.id.rvCollection)
     RecyclerView rvCollection;
 
     @Override
