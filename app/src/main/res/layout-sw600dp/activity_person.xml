@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".activities.PersonActivity">
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,35 +18,45 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="320dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar"
         android:layout_margin="16dp"
         android:background="@drawable/bg_rounded_1"
         android:orientation="vertical"
         android:padding="8dp">
 
-        <CheckBox
-            android:id="@+id/cbDefault"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:text="@string/text_default" />
+            android:orientation="horizontal">
 
-        <CheckBox
-            android:id="@+id/cbOral"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:text="@string/text_oral" />
+            <CheckBox
+                android:id="@+id/cbDefault"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_weight="1"
+                android:text="@string/text_default" />
 
-        <CheckBox
-            android:id="@+id/cbAnal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/text_anal" />
+            <CheckBox
+                android:id="@+id/cbOral"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_weight="1"
+                android:text="@string/text_oral" />
+
+            <CheckBox
+                android:id="@+id/cbAnal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/text_anal" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/etName"
@@ -55,28 +66,6 @@
             android:inputType="textCapSentences"
             android:maxLines="1" />
     </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_editor_insert_photo"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/ivPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:ignore="ContentDescription" />
-
-    </RelativeLayout>
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fabMenu"
@@ -118,5 +107,30 @@
             app:fab_size="mini" />
 
     </com.github.clans.fab.FloatingActionMenu>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_editor_insert_photo"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="ContentDescription" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
