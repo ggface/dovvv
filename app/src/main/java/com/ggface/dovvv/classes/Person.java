@@ -7,7 +7,9 @@ import com.ggface.dovvv.Units;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 
-public class Person {
+import java.io.Serializable;
+
+public class Person implements Serializable {
 
     @Expose
     public long id;
@@ -24,7 +26,7 @@ public class Person {
     public int color;
     public String fullpath;
 
-    public static Person clone(Person instance){
+    public static Person clone(Person instance) {
         Person person = new Person();
         person.id = instance.id;
         person.name = instance.name;

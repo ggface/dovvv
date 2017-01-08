@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ggface.dovvv.App;
 import com.ggface.dovvv.R;
 import com.ggface.dovvv.Units;
 import com.ggface.dovvv.classes.AnimUtils;
@@ -31,208 +30,131 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private int mItemWidth, mItemHeight, mMargin, mColumns;
-    private List<OverviewItem> mItems = new ArrayList<>();
-    //	private ArrayList<Media> mData = new ArrayList<>();
+    private List<Person> mItems = new ArrayList<>();
     private MediaGridAdapter.OnItemClickListener mItemClickListener;
-    final int NORMAL = 0, LOADING = 1;
+    private ScaleToFitWidthHeightTransform transform;
 
     public MediaGridAdapter(Context context, List<Person> items, Integer columns) {
         mColumns = columns;
-
         int screenWidth = PixelUtils.getScreenWidth(context);
         mItemWidth = (screenWidth / columns);
         mItemHeight = (int) ((double) mItemWidth / 0.677);
         mMargin = PixelUtils.getPixelsFromDp(context, 2);
-
+        transform = new ScaleToFitWidthHeightTransform(mItemHeight, false);
         setItems(items);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v;
-        switch (viewType) {
-            case LOADING:
-                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_griditem_loading, parent, false);
-                return new MediaGridAdapter.LoadingHolder(v);
-            case NORMAL:
-            default:
-                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_griditem, parent, false);
-                return new MediaGridAdapter.ViewHolder(v);
-        }
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_griditem, parent, false);
+        return new MediaGridAdapter.ViewHolder(v);
     }
 
+    @SuppressWarnings("ResourceType")
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
         int double_margin = mMargin * 2;
         int top_margin = (position < mColumns) ? mMargin * 2 : mMargin;
 
         GridLayoutManager.LayoutParams layoutParams = (GridLayoutManager.LayoutParams) viewHolder.itemView.getLayoutParams();
-        layoutParams.height = mItemHeight;
-        layoutParams.width = mItemWidth;
         int mod = 0;
+        int side;
         if (position % mColumns == mod) {
             layoutParams.setMargins(double_margin, top_margin, mMargin, mMargin);
+            side = double_margin + mMargin;
         } else if (position % mColumns == mColumns - 1) {
             layoutParams.setMargins(mMargin, top_margin, double_margin, mMargin);
+            side = mMargin + double_margin;
         } else {
             layoutParams.setMargins(mMargin, top_margin, mMargin, mMargin);
+            side = mMargin + mMargin;
         }
+        layoutParams.height = mItemHeight;
+        layoutParams.width = mItemWidth - side;
         viewHolder.itemView.setLayoutParams(layoutParams);
 
-        if (getItemViewType(position) == NORMAL) {
-            final ViewHolder videoViewHolder = (ViewHolder) viewHolder;
-            final OverviewItem overviewItem = getItem(position);
-            Person item = overviewItem.person;
+        final ViewHolder videoViewHolder = (ViewHolder) viewHolder;
+        final Person person = mItems.get(position);
 
+        videoViewHolder.name.setText(person.name);
 
-            videoViewHolder.title.setText(item.name);
-
-            if (item.id > Units.VAR_NEW_PERSON) {
-                String sd = item.traditional ? "v" : "x";
-                String so = item.oral ? "v" : "x";
-                String sa = item.anal ? "v" : "x";
-                videoViewHolder.year.setText(sd + so + sa);
-            }else{
-                videoViewHolder.year.setText(item.extension);
-            }
-            videoViewHolder.coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            videoViewHolder.coverImage.setVisibility(View.GONE);
-            videoViewHolder.title.setVisibility(View.GONE);
-            videoViewHolder.year.setVisibility(View.GONE);
-
-            File file = null;
-            if (item.getFilename() != null)
-                file = App.getContext().getFileStreamPath(item.getFilename());
-
-            RequestCreator rc;
-            if (file != null) {
-                rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(file);
-            } else
-                rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.test_photo_portret);
-
-            rc.resize(mItemWidth, mItemHeight)
-                    .centerCrop()
-                    .transform(DrawGradient.INSTANCE)
-                    .into(videoViewHolder.coverImage, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            overviewItem.isImageError = false;
-                            AnimUtils.fadeIn(videoViewHolder.coverImage);
-                            AnimUtils.fadeIn(videoViewHolder.title);
-                            AnimUtils.fadeIn(videoViewHolder.year);
-                        }
-
-                        @Override
-                        public void onError() {
-                            overviewItem.isImageError = true;
-                            AnimUtils.fadeIn(videoViewHolder.title);
-                            AnimUtils.fadeIn(videoViewHolder.year);
-                        }
-                    });
+        if (person.id > Units.VAR_NEW_PERSON) {
+            String sd = person.traditional ? "v" : "x";
+            String so = person.oral ? "v" : "x";
+            String sa = person.anal ? "v" : "x";
+            videoViewHolder.markers.setText(sd + so + sa);
+        } else {
+            videoViewHolder.markers.setText(person.extension);
         }
+//        videoViewHolder.coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        videoViewHolder.coverImage.setVisibility(View.GONE);
+        videoViewHolder.name.setVisibility(View.GONE);
+        videoViewHolder.markers.setVisibility(View.GONE);
+
+        File file = null;
+        if (person.getFilename() != null) {
+            file = new File(viewHolder.itemView.getContext().getFilesDir().getAbsolutePath(), person.getFilename());
+        }
+
+        RequestCreator rc;
+        if (file != null && file.exists() && file.canRead()) {
+            rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(file);
+//            rc.resize(mItemWidth, mItemHeight).centerCrop();
+        } else
+            rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.test_photo_portret);
+
+
+        rc.transform(transform)
+                .into(videoViewHolder.coverImage
+                        , new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                AnimUtils.fadeIn(videoViewHolder.coverImage);
+                                AnimUtils.fadeIn(videoViewHolder.name);
+                                AnimUtils.fadeIn(videoViewHolder.markers);
+                                videoViewHolder.placeholder_image.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onError() {
+                                AnimUtils.fadeIn(videoViewHolder.name);
+                                AnimUtils.fadeIn(videoViewHolder.markers);
+                            }
+                        }
+                );
     }
 
     @Override
     public int getItemCount() {
-        return mItems.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (getItem(position).isLoadingItem) {
-            return LOADING;
-        }
-        return NORMAL;
-    }
-
-    public OverviewItem getItem(int position) {
-        if (position < 0 || mItems.size() <= position) return null;
-        return mItems.get(position);
+        return null == mItems ? 0 : mItems.size();
     }
 
     public void setOnItemClickListener(MediaGridAdapter.OnItemClickListener listener) {
         mItemClickListener = listener;
     }
 
-
-    public void removeLoading() {
-        if (getItemCount() <= 0) return;
-        OverviewItem item = mItems.get(getItemCount() - 1);
-        if (item.isLoadingItem) {
-            mItems.remove(getItemCount() - 1);
-            notifyDataSetChanged();
-        }
-    }
-
-
-    public void addLoading() {
-        OverviewItem item = null;
-        if (getItemCount() != 0) {
-            item = mItems.get(getItemCount() - 1);
-        }
-
-        if (getItemCount() == 0 || (item != null && !item.isLoadingItem)) {
-            mItems.add(new OverviewItem(true));
-            notifyDataSetChanged();
-        }
-    }
-
-
-    public boolean isLoading() {
-        if (getItemCount() <= 0) return false;
-        return getItemViewType(getItemCount() - 1) == LOADING;
-    }
-
-
     public void setItems(List<Person> items) {
-        // Clear items
-        mItems.clear();
-        // Add new items, if available
-        if (null != items) {
-            for (Person item : items) {
-                mItems.add(new OverviewItem(item));
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void clearItems() {
-        mItems.clear();
+        mItems = items;
         notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
-        public void onItemClick(View v, Person item, int position);
+        void onItemClick(View v, Person item, int position);
     }
 
     public List<Person> getItems() {
-        List<Person> exportSource = null;
-        if (null != mItems && mItems.size() > 0) {
-            exportSource = new ArrayList<>(mItems.size());
-            for (OverviewItem item : mItems) {
-                exportSource.add(item.person);
-            }
-        }
-        return exportSource;
+        return mItems;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        View itemView;
-        @BindView(R.id.focus_overlay)
         View focusOverlay;
-        @BindView(R.id.cover_image)
-        ImageView coverImage;
-        @BindView(R.id.title)
-        TextView title;
-        @BindView(R.id.year)
-        TextView year;
+        ImageView coverImage, placeholder_image;
+        TextView name;
+        TextView markers;
 
         private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
             @Override
@@ -241,54 +163,27 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         };
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            this.itemView = itemView;
+        public ViewHolder(View view) {
+            super(view);
+            focusOverlay = view.findViewById(R.id.focus_overlay);
+            coverImage = (ImageView) view.findViewById(R.id.cover_image);
+            placeholder_image = (ImageView) view.findViewById(R.id.placeholder_image);
+            name = (TextView) view.findViewById(R.id.name);
+            markers = (TextView) view.findViewById(R.id.markers);
+
             itemView.setOnClickListener(this);
             coverImage.setMinimumHeight(mItemHeight);
 
             itemView.setOnFocusChangeListener(mOnFocusChangeListener);
         }
 
-        public ImageView getCoverImage() {
-            return coverImage;
-        }
-
         @Override
         public void onClick(View view) {
             if (mItemClickListener != null) {
-                int position = getPosition();
-                Person item = getItem(position).person;
+                int position = getAdapterPosition();
+                Person item = mItems.get(position);
                 mItemClickListener.onItemClick(view, item, position);
             }
-        }
-
-    }
-
-    class LoadingHolder extends RecyclerView.ViewHolder {
-
-        View itemView;
-
-        public LoadingHolder(View itemView) {
-            super(itemView);
-            this.itemView = itemView;
-            itemView.setMinimumHeight(mItemHeight);
-        }
-
-    }
-
-    class OverviewItem {
-        Person person;
-        boolean isImageError = true;
-        boolean isLoadingItem = false;
-
-        OverviewItem(Person media) {
-            this.person = media;
-        }
-
-        OverviewItem(boolean loading) {
-            this.isLoadingItem = loading;
         }
     }
 
@@ -318,6 +213,54 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Override
         public String key() {
             return "gradient()";
+        }
+    }
+
+    public class ScaleToFitWidthHeightTransform implements Transformation {
+
+        private int mSize;
+        private boolean isHeightScale;
+
+        public ScaleToFitWidthHeightTransform(int size, boolean isHeightScale) {
+            mSize = size;
+            this.isHeightScale = isHeightScale;
+        }
+
+        @Override
+        public Bitmap transform(Bitmap source) {
+            float scale;
+            int newSize;
+            Bitmap scaleBitmap;
+            if (isHeightScale) {
+                scale = (float) mSize / source.getHeight();
+                newSize = Math.round(source.getWidth() * scale);
+                scaleBitmap = Bitmap.createScaledBitmap(source, newSize, mSize, true);
+            } else {
+                scale = (float) mSize / source.getWidth();
+                newSize = Math.round(source.getHeight() * scale);
+                scaleBitmap = Bitmap.createScaledBitmap(source, mSize, newSize, true);
+            }
+
+            if (scaleBitmap != source) {
+                source.recycle();
+            }
+//            Canvas canvas = new Canvas(scaleBitmap);
+//
+//            Paint paint = new Paint();
+//            float gradientHeight = newSize / 2f;
+//            LinearGradient shader = new LinearGradient(0, newSize - gradientHeight, 0, newSize, 0xFFFFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP);
+//            paint.setShader(shader);
+//            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+//            canvas.drawRect(0, newSize - gradientHeight, mSize, newSize, paint);
+
+
+            return scaleBitmap;
+
+        }
+
+        @Override
+        public String key() {
+            return "scaleRespectRatio" + mSize + isHeightScale;
         }
     }
 }

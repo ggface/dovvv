@@ -1,94 +1,254 @@
 package com.ggface.dovvv.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.ggface.dovvv.App;
 import com.ggface.dovvv.R;
-import com.ggface.dovvv.fragments.GalleryFragment;
+import com.ggface.dovvv.UI;
+import com.ggface.dovvv.Units;
+import com.ggface.dovvv.adapters.MediaGridAdapter;
+import com.ggface.dovvv.classes.DBHelper;
+import com.ggface.dovvv.classes.IRoom;
+import com.ggface.dovvv.classes.Person;
+import com.ggface.dovvv.classes.Tools;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class MainActivity extends AppCompatActivity {
 
-//    private static final int REQUEST_WRITE_STORAGE = 112;
+    private MediaGridAdapter mAdapter;
 
-    @BindView(R.id.toolbar)
-    Toolbar pToolbar;
+    private final View.OnClickListener doneClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, PersonActivity.class);
+            startActivityForResult(intent, Units.RC_PERSON);
+        }
+    };
+
+    private MediaGridAdapter.OnItemClickListener mOnItemClickListener = new MediaGridAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(View v, Person item, int position) {
+            if (Units.VAR_NEW_PERSON < item.id) {
+                Intent intent = new Intent(MainActivity.this, PersonActivity.class);
+                intent.putExtra(Units.ARG_INDEX, item.id);
+                startActivityForResult(intent, Units.RC_PERSON);
+            } else {
+                importData(item.fullpath);
+                UI.text(MainActivity.this, getString(R.string.data_wrote_to_database));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
+        Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(pToolbar);
+        //noinspection ConstantConditions
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
-//        pToolbar.setLogo();
-//        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-//
-//        if (!hasPermission) {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                    REQUEST_WRITE_STORAGE);
-//        }
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.container, new GalleryFragment())
-                    .commit();
-        }
+        Integer mColumns = getResources().getInteger(R.integer.overview_cols);
+        List<Person> mItems = getRoom().read();
+
+        mAdapter = new MediaGridAdapter(this, mItems, mColumns);
+        mAdapter.setOnItemClickListener(mOnItemClickListener);
+
+        removeTrash();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        RecyclerView rvCollection = (RecyclerView) findViewById(R.id.rvCollection);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(this, mColumns);
+
+        rvCollection.setLayoutManager(mLayoutManager);
+        rvCollection.setHasFixedSize(true);
+        rvCollection.setAdapter(mAdapter);
+
+        fab.setOnClickListener(doneClickListener);
     }
 
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        switch (requestCode)
-//        {
-//            case REQUEST_WRITE_STORAGE: {
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-//                {
-//                    //reload my activity with permission granted or use the features what required the permission
-//                } else
-//                {
-//                    Toast.makeText(parentActivity, "The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        }
-//    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        List<Person> items = getRoom().read();
+        mAdapter.setItems(items);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        if (App.isDev())
+        if (App.isDev()) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
+        }
         return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_export) {
+            exportData();
+            UI.text(this, getString(R.string.export_complete));
+            return true;
+        } else if (id == R.id.action_import) {
+            makeBackupList();
+            UI.text(this, getString(R.string.backup_list_made));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private IRoom getRoom() {
+        return DBHelper.getInstance(this);
+    }
+
+    private void removeTrash() {
+        List<File> existsPhotos = new ArrayList<>();
+
+        if (null != mAdapter.getItems())
+            for (Person person : mAdapter.getItems()) {
+                if (null != person.getFilename()) {
+                    File src = getFileStreamPath(person.getFilename());
+                    existsPhotos.add(src);
+                }
+            }
+
+        List<File> allFiles = Arrays.asList(getFilesDir().listFiles());
+
+        if (allFiles.size() > 0) {
+            Iterator<File> it = allFiles.iterator();
+            //noinspection WhileLoopReplaceableByForEach
+            while (it.hasNext()) {
+                File file = it.next();
+                String filename = file.getName();
+                if (filename.contains("dovvv_photo_")) {
+                    if (!existsPhotos.contains(file)) {
+                        //noinspection ResultOfMethodCallIgnored
+                        file.delete();
+                    }
+                }
+            }
+        }
+    }
+
+    private void exportData() {
+        try {
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+                    .create();
+
+            List<Person> persons = this.mAdapter.getItems();
+            String json = gson.toJson(persons,
+                    new TypeToken<List<Person>>() {
+                    }.getType());
+
+            File folder = new File(App.getPIO(this, null), Tools.getCustomDateFormat(new Date(), "yyyy-MM-dd HHmmss") + " backup");
+            if (!folder.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                folder.mkdirs();
+            }
+            File cookiesFile = new File(folder, "backup.json");
+
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(cookiesFile);
+                fos.write(json.getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (null != fos) {
+                    //noinspection ThrowFromFinallyBlock
+                    fos.close();
+                }
+            }
+            for (Person person : persons) {
+                if (null != person.getFilename()) {
+                    File src = getFileStreamPath(person.getFilename());
+                    Tools.copyFile(src, new File(folder, person.getFilename()));
+                }
+            }
+        } catch (Exception e) {
+            UI.text(this, e.getMessage());
+        }
+    }
+
+    private void makeBackupList() {
+        List<Person> items = new ArrayList<>();
+        File[] files = App.getPIO(this, null).listFiles();
+
+        if (null == files)
+            return;
+
+        int iterator = -1;
+        for (File inFile : files) {
+            if (inFile.isDirectory()) {
+                Person p = new Person();
+                p.id = iterator--;
+                p.fullpath = inFile.getAbsolutePath();
+                p.name = inFile.getName();
+                p.extension = String.valueOf((int) Tools.folderSize(inFile) / 1024 / 1024) + " mB";
+                items.add(p);
+            }
+        }
+        mAdapter.setItems(items);
+    }
+
+    private void importData(String srcPath) {
+        try {
+            DBHelper.getInstance(this).clear();
+
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation().create();
+
+            File dir = new File(srcPath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(dir + File.separator + "backup.json")));
+
+            List<Person> persons = gson.fromJson(br,
+                    new TypeToken<List<Person>>() {
+                    }.getType());
+
+            for (Person p : persons) {
+                if (p.extension != null) {
+                    File photo = new File(dir + File.separator + "dovvv_photo_" + p.id + '.' + p.extension);
+                    if (photo.exists()) {
+                        Tools.writePhoto(this, p.id, photo.getAbsoluteFile());
+                    }
+                }
+                getRoom().insert(p);
+            }
+            mAdapter.setItems(persons);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

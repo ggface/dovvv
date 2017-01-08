@@ -227,7 +227,7 @@ public class Tools {
         return ((AppCompatActivity) instance.getActivity()).getSupportActionBar();
     }
 
-    public static String writePhoto(long index, File src) {
+    public static String writePhoto(Context context, long index, File src) {
         String filenameArray[] = src.getName().split("\\.");
         String extension = filenameArray[filenameArray.length - 1];
         String newFilename = "dovvv_photo_" + String.valueOf(index) + '.' + extension;
@@ -236,7 +236,7 @@ public class Tools {
         FileOutputStream os = null;
         try {
             is = new FileInputStream(src);
-            os = App.getContext().openFileOutput(newFilename, Context.MODE_PRIVATE);
+            os = context.openFileOutput(newFilename, Context.MODE_PRIVATE);
             byte[] buff = new byte[1024];
             int len;
             while ((len = is.read(buff)) > 0) {
