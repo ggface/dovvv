@@ -39,14 +39,14 @@ import java.util.List;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class MainActivity extends AppCompatActivity {
+public class GalleryActivity extends AppCompatActivity {
 
     private MediaGridAdapter mAdapter;
 
     private final View.OnClickListener doneClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(MainActivity.this, PersonActivity.class);
+            Intent intent = new Intent(GalleryActivity.this, PersonActivity.class);
             startActivityForResult(intent, Units.RC_PERSON);
         }
     };
@@ -55,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(View v, Person item, int position) {
             if (Units.VAR_NEW_PERSON < item.id) {
-                Intent intent = new Intent(MainActivity.this, PersonActivity.class);
+                Intent intent = new Intent(GalleryActivity.this, PersonActivity.class);
                 intent.putExtra(Units.ARG_INDEX, item.id);
                 startActivityForResult(intent, Units.RC_PERSON);
             } else {
                 importData(item.fullpath);
-                UI.text(MainActivity.this, getString(R.string.data_wrote_to_database));
+                UI.text(GalleryActivity.this, getString(R.string.data_wrote_to_database));
             }
         }
     };
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_gallery);
         Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(pToolbar);
         //noinspection ConstantConditions
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (App.isDev()) {
-            getMenuInflater().inflate(R.menu.menu_main, menu);
+            getMenuInflater().inflate(R.menu.menu_gallery, menu);
         }
         return true;
     }
@@ -124,6 +124,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_import) {
             makeBackupList();
             UI.text(this, getString(R.string.backup_list_made));
+            return true;
+        } else if (id == R.id.action_sync) {
+
             return true;
         }
         return super.onOptionsItemSelected(item);

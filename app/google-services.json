@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "749618224169",
+    "firebase_url": "https://dovvv-2afc8.firebaseio.com",
+    "project_id": "dovvv-2afc8",
+    "storage_bucket": "dovvv-2afc8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749618224169:android:0a22a3c17ad9e45a",
+        "android_client_info": {
+          "package_name": "com.ggface.dovvv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "749618224169-vub03l4r79ji4036adfjt6hltnoauu7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ggface.dovvv",
+            "certificate_hash": "e399b91b090fa42f5194528a3e1013c4d9145290"
+          }
+        },
+        {
+          "client_id": "749618224169-j30mh7mjpfp3v1lee0ttko6gps6gis07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBq5d_ZO98RGrZGrLGso6eZeixpMR3Osj0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "749618224169-j30mh7mjpfp3v1lee0ttko6gps6gis07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
