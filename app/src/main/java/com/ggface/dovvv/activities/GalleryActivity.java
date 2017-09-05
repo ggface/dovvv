@@ -1,5 +1,10 @@
 package com.ggface.dovvv.activities;
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,7 +132,16 @@ public class GalleryActivity extends AppCompatActivity {
             UI.text(this, getString(R.string.backup_list_made));
             return true;
         } else if (id == R.id.action_sync) {
-
+//            AccountManager am = AccountManager.get(this);
+//            Bundle options = new Bundle();
+//
+//            am.getAuthToken(
+//                    myAccount_,                     // Account retrieved using getAccountsByType()
+//                    "Manage your tasks",            // Auth scope
+//                    options,                        // Authenticator-specific options
+//                    this,                           // Your activity
+//                    new OnTokenAcquired(),          // Callback called when a token is successfully acquired
+//                    new Handler(new OnError()));    // Callback called if an error occurs
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -252,6 +267,30 @@ public class GalleryActivity extends AppCompatActivity {
             mAdapter.setItems(persons);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static class OnTokenAcquired implements AccountManagerCallback<Bundle> {
+        @Override
+        public void run(AccountManagerFuture<Bundle> result) {
+            // Get the result of the operation from the AccountManagerFuture.
+            Bundle bundle = null;
+            try {
+                bundle = result.getResult();
+
+                // The token is a named value in the bundle. The name of the value
+                // is stored in the constant AccountManager.KEY_AUTHTOKEN.
+                String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+            } catch (OperationCanceledException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AuthenticatorException e) {
+                e.printStackTrace();
+            }
+
+
+
         }
     }
 }
