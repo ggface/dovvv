@@ -23,8 +23,9 @@ public class App extends Application {
 
     public static Boolean isDev() {
         // DON'T TOUCH
-        if (!BuildConfig.DEBUG)
+        if (!BuildConfig.DEBUG) {
             return false;
+        }
 
         // SET DEV MODE AS INIT VALUE
         return true;

@@ -1,19 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "com.ggface.dovvv"
         minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 4
-        versionName "0.3"
-
-        jackOptions {
-            enabled true
-        }
+        targetSdkVersion 27
+        versionCode 5
+        versionName "0.4"
     }
     buildTypes {
         release {
@@ -22,20 +17,19 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:palette-v7:25.1.0'
-    compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'ch.acra:acra:4.6.2'
-    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-    compile 'com.google.code.gson:gson:2.5'
-    compile 'com.github.clans:fab:1.6.3'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:palette-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'ch.acra:acra:4.6.2'
+    implementation 'uk.co.chrisjenx:calligraphy:2.1.0'
+    implementation 'com.google.code.gson:gson:2.5'
+    implementation 'com.github.clans:fab:1.6.4'
 }

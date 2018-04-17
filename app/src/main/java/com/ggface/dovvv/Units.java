@@ -1,6 +1,7 @@
 package com.ggface.dovvv;
 
 public class Units {
+
     public static final String EMPTY = "";
 
     public static final long VAR_NEW_PERSON = -1;

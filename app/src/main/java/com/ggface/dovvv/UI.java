@@ -8,18 +8,21 @@ import android.widget.Toast;
 public class UI {
 
     public static void gone(View view) {
-        if (view != null)
+        if (view != null) {
             view.setVisibility(View.GONE);
+        }
     }
 
     public static void hide(View view) {
-        if (view != null)
+        if (view != null) {
             view.setVisibility(View.INVISIBLE);
+        }
     }
 
     public static void show(View view) {
-        if (view != null)
+        if (view != null) {
             view.setVisibility(View.VISIBLE);
+        }
     }
 
     @SuppressWarnings("unchecked")

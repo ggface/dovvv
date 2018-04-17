@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -47,15 +48,16 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         setItems(items);
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_griditem, parent, false);
         return new MediaGridAdapter.ViewHolder(v);
     }
 
     @SuppressWarnings("ResourceType")
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int position) {
         int double_margin = mMargin * 2;
         int top_margin = (position < mColumns) ? mMargin * 2 : mMargin;
 
@@ -103,8 +105,9 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (file != null && file.exists() && file.canRead()) {
             rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(file);
 //            rc.resize(mItemWidth, mItemHeight).centerCrop();
-        } else
+        } else {
             rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.test_photo_portret);
+        }
 
 
         rc.transform(transform)
@@ -163,13 +166,13 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         };
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             focusOverlay = view.findViewById(R.id.focus_overlay);
-            coverImage = (ImageView) view.findViewById(R.id.cover_image);
-            placeholder_image = (ImageView) view.findViewById(R.id.placeholder_image);
-            name = (TextView) view.findViewById(R.id.name);
-            markers = (TextView) view.findViewById(R.id.markers);
+            coverImage = view.findViewById(R.id.cover_image);
+            placeholder_image = view.findViewById(R.id.placeholder_image);
+            name = view.findViewById(R.id.name);
+            markers = view.findViewById(R.id.markers);
 
             itemView.setOnClickListener(this);
             coverImage.setMinimumHeight(mItemHeight);
@@ -221,7 +224,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private int mSize;
         private boolean isHeightScale;
 
-        public ScaleToFitWidthHeightTransform(int size, boolean isHeightScale) {
+        ScaleToFitWidthHeightTransform(int size, boolean isHeightScale) {
             mSize = size;
             this.isHeightScale = isHeightScale;
         }

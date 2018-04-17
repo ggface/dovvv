@@ -35,7 +35,7 @@ public class WarningToast extends Toast {
         setDuration(Toast.LENGTH_SHORT);
         setView(mView);
 
-        textView = (TextView) mView.findViewById(R.id.text);
+        textView = mView.findViewById(R.id.text);
     }
 
     @Override
@@ -50,6 +50,7 @@ public class WarningToast extends Toast {
 
     public interface OnToastListener {
         void showWarning(String message);
+
         void hide();
     }
 }

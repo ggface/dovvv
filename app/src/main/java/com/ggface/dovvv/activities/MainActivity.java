@@ -38,30 +38,23 @@ import java.util.List;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private MediaGridAdapter mAdapter;
 
-    private final View.OnClickListener doneClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(MainActivity.this, PersonActivity.class);
-            startActivityForResult(intent, Units.RC_PERSON);
-        }
+    private final View.OnClickListener doneClickListener = v -> {
+        Intent intent = new Intent(MainActivity.this, PersonActivity.class);
+        startActivityForResult(intent, Units.RC_PERSON);
     };
 
-    private MediaGridAdapter.OnItemClickListener mOnItemClickListener = new MediaGridAdapter.OnItemClickListener() {
-        @Override
-        public void onItemClick(View v, Person item, int position) {
-            if (Units.VAR_NEW_PERSON < item.id) {
-                Intent intent = new Intent(MainActivity.this, PersonActivity.class);
-                intent.putExtra(Units.ARG_INDEX, item.id);
-                startActivityForResult(intent, Units.RC_PERSON);
-            } else {
-                importData(item.fullpath);
-                UI.text(MainActivity.this, getString(R.string.data_wrote_to_database));
-            }
+    private MediaGridAdapter.OnItemClickListener mOnItemClickListener = (v, item, position) -> {
+        if (Units.VAR_NEW_PERSON < item.id) {
+            Intent intent = new Intent(MainActivity.this, PersonActivity.class);
+            intent.putExtra(Units.ARG_INDEX, item.id);
+            startActivityForResult(intent, Units.RC_PERSON);
+        } else {
+            importData(item.fullpath);
+            UI.text(MainActivity.this, getString(R.string.data_wrote_to_database));
         }
     };
 
@@ -69,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar pToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(pToolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
@@ -82,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
         removeTrash();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        RecyclerView rvCollection = (RecyclerView) findViewById(R.id.rvCollection);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        RecyclerView rvCollection = findViewById(R.id.rvCollection);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this, mColumns);
 
         rvCollection.setLayoutManager(mLayoutManager);
@@ -136,13 +129,14 @@ public class MainActivity extends AppCompatActivity {
     private void removeTrash() {
         List<File> existsPhotos = new ArrayList<>();
 
-        if (null != mAdapter.getItems())
+        if (null != mAdapter.getItems()) {
             for (Person person : mAdapter.getItems()) {
                 if (null != person.getFilename()) {
                     File src = getFileStreamPath(person.getFilename());
                     existsPhotos.add(src);
                 }
             }
+        }
 
         List<File> allFiles = Arrays.asList(getFilesDir().listFiles());
 
@@ -206,8 +200,9 @@ public class MainActivity extends AppCompatActivity {
         List<Person> items = new ArrayList<>();
         File[] files = App.getPIO(this, null).listFiles();
 
-        if (null == files)
+        if (null == files) {
             return;
+        }
 
         int iterator = -1;
         for (File inFile : files) {

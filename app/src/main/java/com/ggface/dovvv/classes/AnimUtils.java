@@ -4,8 +4,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.ggface.dovvv.App;
-
 public class AnimUtils {
 
     public static void fadeIn(View v) {
@@ -23,5 +21,4 @@ public class AnimUtils {
         v.setVisibility(View.INVISIBLE);
         v.requestLayout(); // Force redraw
     }
-
 }

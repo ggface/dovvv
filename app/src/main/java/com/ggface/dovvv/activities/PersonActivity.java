@@ -83,9 +83,9 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
                                     Units.RC_WRITE_STORAGE);
                         } else {
                             String extension = Tools.writePhoto(PersonActivity.this, mPerson.id, new File(mPerson.fullpath));
-                            if (null != extension)
+                            if (null != extension) {
                                 mPerson.extension = extension;
-                            else {
+                            } else {
                                 showWarning("Error. Copy file failed.");
                                 return;
                             }
@@ -127,9 +127,10 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
     private final FloatingActionMenu.OnMenuToggleListener onMenuToggleListener = new FloatingActionMenu.OnMenuToggleListener() {
         @Override
         public void onMenuToggle(boolean opened) {
-            FloatingActionButton fab = (FloatingActionButton) fMenu.findViewById(R.id.menu_remove);
-            if (null == fab)
+            FloatingActionButton fab = fMenu.findViewById(R.id.menu_remove);
+            if (null == fab) {
                 return;
+            }
 
             fab.setEnabled(mPerson.id != Units.VAR_NEW_PERSON);
         }
@@ -141,23 +142,18 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person);
 
-        Toolbar pToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar pToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(pToolbar);
         pToolbar.setNavigationIcon(R.drawable.ic_action_navigation_arrow_back);
-        pToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        pToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        ivPhoto = (ImageView) findViewById(R.id.ivPhoto);
-        CheckBox cbDefault = (CheckBox) findViewById(R.id.cbDefault);
-        CheckBox cbAnal = (CheckBox) findViewById(R.id.cbAnal);
-        CheckBox cbOral = (CheckBox) findViewById(R.id.cbOral);
-        etName = (EditText) findViewById(R.id.etName);
-        ImageView btnAddPhoto = (ImageView) findViewById(R.id.imageView);
-        fMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
+        ivPhoto = findViewById(R.id.ivPhoto);
+        CheckBox cbDefault = findViewById(R.id.cbDefault);
+        CheckBox cbAnal = findViewById(R.id.cbAnal);
+        CheckBox cbOral = findViewById(R.id.cbOral);
+        etName = findViewById(R.id.etName);
+        ImageView btnAddPhoto = findViewById(R.id.imageView);
+        fMenu = findViewById(R.id.fabMenu);
 
         findViewById(R.id.menu_done).setOnClickListener(onClickListener);
         findViewById(R.id.menu_refresh).setOnClickListener(onClickListener);
@@ -251,9 +247,9 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
             case Units.RC_WRITE_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     String extension = Tools.writePhoto(this, mPerson.id, new File(mPerson.fullpath));
-                    if (null != extension)
+                    if (null != extension) {
                         mPerson.extension = extension;
-                    else {
+                    } else {
                         showWarning("Error. Copy file failed.");
                         return;
                     }
@@ -286,10 +282,11 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
         if (Tools.containsString(savedInstanceState, Units.ARG_JSON)) {
             String json = savedInstanceState.getString(Units.ARG_JSON);
             this.mPerson = new Gson().fromJson(json, Person.class);
-            if (null != mPerson.fullpath)
+            if (null != mPerson.fullpath) {
                 Picasso.with(this)
                         .load(new File(mPerson.fullpath))
                         .into(ivPhoto);
+            }
         }
     }
 
