@@ -30,16 +30,17 @@ import com.ggface.dovvv.classes.Person;
 import com.ggface.dovvv.classes.Tools;
 import com.ggface.dovvv.widgets.WarningToast;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class PersonActivity extends AppCompatActivity {
 
     private static final String EXTRA_PERSON_ID = "EXTRA_PERSON_ID";
+    private static final String EXTRA_PERSON = "EXTRA_PERSON";
 
     private Toast mToast;
     private Person mPerson;
@@ -97,15 +98,170 @@ public class PersonActivity extends AppCompatActivity {
         activity.startActivityForResult(intent, Units.RC_PERSON);
     }
 
-    @SuppressWarnings("ConstantConditions")
+    //region Lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person);
+        ButterKnife.bind(this);
 
-        setSupportActionBar(mToolbar);
         mToolbar.setNavigationIcon(R.drawable.ic_action_navigation_arrow_back);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        initMenuButtons();
+
+        mToast = new WarningToast(this);
+
+        mTraditionalCheckBox.setOnClickListener(mOnCheckBoxClickListener);
+        mOralCheckBox.setOnClickListener(mOnCheckBoxClickListener);
+        mAnalCheckBox.setOnClickListener(mOnCheckBoxClickListener);
+
+        createCustomAnimation();
+        if (savedInstanceState == null) {
+            final long personId = getIntent().getLongExtra(EXTRA_PERSON_ID, Units.VAR_NEW_PERSON);
+            if (personId == Units.VAR_NEW_PERSON) {
+                mPerson = new Person();
+                mPerson.id = Units.VAR_NEW_PERSON;
+                mToolbar.setTitle(R.string.new_lovely_note);
+            } else {
+                mPerson = getRoom().select(personId);
+
+                if (null == mPerson) {
+                    showWarning(getString(R.string.person_not_found));
+                    finish();
+                    return;
+                }
+                mNameEditText.append(mPerson.name);
+
+                if (null != mPerson.getFilename()) {
+                    File file = getFileStreamPath(mPerson.getFilename());
+
+                    Picasso.with(this)
+                            .load(file)
+                            .into(mPhotoImageView);
+                }
+                mTraditionalCheckBox.setChecked(mPerson.traditional);
+                mOralCheckBox.setChecked(mPerson.oral);
+                mAnalCheckBox.setChecked(mPerson.anal);
+
+                mToolbar.setTitle(R.string.edit_lovely_note);
+            }
+        } else {
+            mPerson = savedInstanceState.getParcelable(EXTRA_PERSON);
+            if (mPerson != null && mPerson.fullpath != null) {
+                Picasso.with(this)
+                        .load(new File(mPerson.fullpath))
+                        .into(mPhotoImageView);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_PERSON, mPerson);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (Units.RC_BROWSE_PHOTO == requestCode && resultCode == Activity.RESULT_OK) {
+            if (data == null || data.getData() == null) {
+                showWarning("Error. Empty data.");
+                return;
+            }
+            Uri photo = Tools.getSelectedImage(this, data.getData());
+            if (photo == null) {
+                showWarning("Error. Empty uri.");
+                return;
+            }
+
+            File file = new File(photo.getPath());
+            if (!file.exists()) {
+                showWarning("Error. File not exits.");
+                return;
+            }
+
+            mPerson.fullpath = file.getPath();
+
+            Picasso.with(this)
+                    .load(file)
+                    .into(mPhotoImageView);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case Units.RC_WRITE_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    String extension = Tools.writePhoto(this, mPerson.id, new File(mPerson.fullpath));
+                    if (null != extension) {
+                        mPerson.extension = extension;
+                    } else {
+                        showWarning("Error. Copy file failed.");
+                        return;
+                    }
+                    getRoom().update(mPerson);
+                    //reload my activity with permission granted or use the features what required the permission
+                } else {
+                    mPerson.fullpath = null;
+                    showWarning("The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission.");
+                }
+                break;
+            case Units.RC_BROWSE_IMAGES:
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, Units.RC_BROWSE_PHOTO);
+                break;
+        }
+    }
+    //endregion Lifecycle
+
+    private void showWarning(String message) {
+        mToast.cancel();
+        mToast.setText(message);
+        mToast.show();
+    }
+
+    private void createCustomAnimation() {
+        AnimatorSet set = new AnimatorSet();
+
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+
+        scaleOutX.setDuration(50);
+        scaleOutY.setDuration(50);
+
+        scaleInX.setDuration(150);
+        scaleInY.setDuration(150);
+
+        scaleInX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mFabMenuButton.getMenuIconView().setImageResource(mFabMenuButton.isOpened()
+                        ? R.drawable.ic_action_navigation_close : R.drawable.ic_action_navigation_menu);
+            }
+        });
+
+        set.play(scaleOutX).with(scaleOutY);
+        set.play(scaleInX).with(scaleInY).after(scaleOutX);
+        set.setInterpolator(new OvershootInterpolator(2));
+
+        mFabMenuButton.setIconToggleAnimatorSet(set);
+    }
+
+    private IRoom getRoom() {
+        return DBHelper.getInstance(this);
+    }
+
+    private void initMenuButtons() {
+        mFabMenuButton.setClosedOnTouchOutside(true);
+        mFabMenuButton.setOnMenuToggleListener(opened -> mMenuRemove.setEnabled(mPerson.id != Units.VAR_NEW_PERSON));
 
         mMenuDone.setOnClickListener(v -> {
             mPerson.name = mNameEditText.getText().toString();
@@ -165,168 +321,5 @@ public class PersonActivity extends AppCompatActivity {
             }
             finish();
         });
-        mToast = new WarningToast(this);
-        mFabMenuButton.setClosedOnTouchOutside(true);
-        mFabMenuButton.setOnMenuToggleListener(opened -> mMenuRemove.setEnabled(mPerson.id != Units.VAR_NEW_PERSON));
-
-        mTraditionalCheckBox.setOnClickListener(mOnCheckBoxClickListener);
-        mOralCheckBox.setOnClickListener(mOnCheckBoxClickListener);
-        mAnalCheckBox.setOnClickListener(mOnCheckBoxClickListener);
-
-        Bundle bundle = getIntent().getExtras();
-
-        if (Tools.containsString(bundle, Units.ARG_JSON)) {
-            String json = bundle.getString(Units.ARG_JSON);
-            this.mPerson = new Gson().fromJson(json, Person.class);
-
-            getSupportActionBar().setTitle(this.mPerson.name);
-        } else if (Tools.containsLong(bundle, EXTRA_PERSON_ID)) {
-            long id = bundle.getLong(EXTRA_PERSON_ID);
-            mPerson = getRoom().select(id);
-
-            if (null == mPerson) {
-                showWarning(getString(R.string.person_not_found));
-                finish();
-                return;
-            }
-            mNameEditText.append(mPerson.name);
-
-            if (null != mPerson.getFilename()) {
-                File file = getFileStreamPath(mPerson.getFilename());
-
-                Picasso.with(this)
-                        .load(file)
-                        .into(mPhotoImageView);
-            }
-            mTraditionalCheckBox.setChecked(mPerson.traditional);
-            mOralCheckBox.setChecked(mPerson.oral);
-            mAnalCheckBox.setChecked(mPerson.anal);
-
-            getSupportActionBar().setTitle(R.string.edit_lovely_note);
-        } else {
-            mPerson = new Person();
-            mPerson.id = Units.VAR_NEW_PERSON;
-            getSupportActionBar().setTitle(R.string.new_lovely_note);
-        }
-        createCustomAnimation();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (Units.RC_BROWSE_PHOTO == requestCode && resultCode == Activity.RESULT_OK) {
-
-            if (data == null || data.getData() == null) {
-                showWarning("Error. Empty data.");
-                return;
-            }
-            Uri photo = Tools.getSelectedImage(this, data.getData());
-            if (photo == null) {
-                showWarning("Error. Empty uri.");
-                return;
-            }
-
-            File file = new File(photo.getPath());
-            if (!file.exists()) {
-                showWarning("Error. File not exits.");
-                return;
-            }
-
-            mPerson.fullpath = file.getPath();
-
-            Picasso.with(this)
-                    .load(file)
-                    .into(mPhotoImageView);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case Units.RC_WRITE_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    String extension = Tools.writePhoto(this, mPerson.id, new File(mPerson.fullpath));
-                    if (null != extension) {
-                        mPerson.extension = extension;
-                    } else {
-                        showWarning("Error. Copy file failed.");
-                        return;
-                    }
-                    getRoom().update(mPerson);
-                    //reload my activity with permission granted or use the features what required the permission
-                } else {
-                    mPerson.fullpath = null;
-                    showWarning("The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission.");
-                }
-                break;
-            case Units.RC_BROWSE_IMAGES:
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, Units.RC_BROWSE_PHOTO);
-                break;
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (null != mPerson) {
-            outState.putString(Units.ARG_JSON, new Gson().toJson(mPerson, Person.class));
-        }
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (Tools.containsString(savedInstanceState, Units.ARG_JSON)) {
-            String json = savedInstanceState.getString(Units.ARG_JSON);
-            this.mPerson = new Gson().fromJson(json, Person.class);
-            if (null != mPerson.fullpath) {
-                Picasso.with(this)
-                        .load(new File(mPerson.fullpath))
-                        .into(mPhotoImageView);
-            }
-        }
-    }
-
-    private void showWarning(String message) {
-        mToast.cancel();
-        mToast.setText(message);
-        mToast.show();
-    }
-
-    private void createCustomAnimation() {
-        AnimatorSet set = new AnimatorSet();
-
-        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleX", 1.0f, 0.2f);
-        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleY", 1.0f, 0.2f);
-
-        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleX", 0.2f, 1.0f);
-        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleY", 0.2f, 1.0f);
-
-        scaleOutX.setDuration(50);
-        scaleOutY.setDuration(50);
-
-        scaleInX.setDuration(150);
-        scaleInY.setDuration(150);
-
-        scaleInX.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mFabMenuButton.getMenuIconView().setImageResource(mFabMenuButton.isOpened()
-                        ? R.drawable.ic_action_navigation_close : R.drawable.ic_action_navigation_menu);
-            }
-        });
-
-        set.play(scaleOutX).with(scaleOutY);
-        set.play(scaleInX).with(scaleInY).after(scaleOutX);
-        set.setInterpolator(new OvershootInterpolator(2));
-
-        mFabMenuButton.setIconToggleAnimatorSet(set);
-    }
-
-    private IRoom getRoom() {
-        return DBHelper.getInstance(this);
     }
 }

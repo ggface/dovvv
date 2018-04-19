@@ -1,7 +1,6 @@
 package com.ggface.dovvv.classes;
 
 import android.content.ContentValues;
-import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -27,7 +26,6 @@ public class Person implements Parcelable {
     @Expose
     public boolean oral, anal, traditional;
 
-    public int color;
     public String fullpath;
 
     protected Person(Parcel parcel) {
@@ -37,12 +35,10 @@ public class Person implements Parcelable {
         oral = PojoUtils.toBoolean(parcel.readByte());
         anal = PojoUtils.toBoolean(parcel.readByte());
         traditional = PojoUtils.toBoolean(parcel.readByte());
-        color = parcel.readInt();
         fullpath = parcel.readString();
     }
 
     public Person() {
-        this.color = Color.parseColor("#3F51B5");
     }
 
     public String getFilename() {
@@ -77,14 +73,13 @@ public class Person implements Parcelable {
                 PojoUtils.equal(oral, that.oral) &&
                 PojoUtils.equal(anal, that.anal) &&
                 PojoUtils.equal(traditional, that.traditional) &&
-                PojoUtils.equal(color, that.color) &&
                 PojoUtils.equal(fullpath, that.fullpath);
     }
 
     @Override
     public int hashCode() {
         return PojoUtils.hashCode(id, extension, name, oral, anal,
-                traditional, color, fullpath);
+                traditional, fullpath);
     }
 
     @Override
@@ -96,7 +91,6 @@ public class Person implements Parcelable {
                 ", oral=" + oral +
                 ", anal=" + anal +
                 ", traditional=" + traditional +
-                ", color=" + color +
                 ", fullpath='" + fullpath + '\'' +
                 '}';
     }
@@ -115,7 +109,6 @@ public class Person implements Parcelable {
         dest.writeByte(PojoUtils.toByte(oral));
         dest.writeByte(PojoUtils.toByte(anal));
         dest.writeByte(PojoUtils.toByte(traditional));
-        dest.writeInt(color);
         dest.writeString(fullpath);
     }
     //endregion Parcelable

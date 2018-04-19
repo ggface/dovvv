@@ -162,7 +162,6 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
     @Override
     public void remove(Person instance) {
         SQLiteDatabase db = this.getWritableDatabase();
-//        String[] args = new String[]{String.valueOf(instance.id)};
         db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE _id=?", args(instance.id));//TODO проверить работу фции args
         db.close();
     }
