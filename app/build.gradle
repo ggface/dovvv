@@ -28,8 +28,8 @@ dependencies {
     implementation 'com.android.support:palette-v7:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'ch.acra:acra:4.6.2'
-    implementation 'uk.co.chrisjenx:calligraphy:2.1.0'
     implementation 'com.google.code.gson:gson:2.5'
     implementation 'com.github.clans:fab:1.6.4'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }

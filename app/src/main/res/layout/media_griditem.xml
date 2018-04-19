@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -17,52 +18,52 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:scaleType="centerInside"
         android:src="@mipmap/ic_launcher"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"/>
 
     <ImageView
         android:id="@+id/cover_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"/>
 
     <View
         android:id="@+id/focus_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/overlay"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/markers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/overlay"
         android:gravity="start|center_vertical"
         android:paddingBottom="@dimen/griditem_title_bottom"
         android:paddingLeft="@dimen/griditem_title_horizontal"
         android:paddingRight="@dimen/griditem_title_horizontal"
         android:textColor="@android:color/white"
         android:textSize="@dimen/griditem_year_textsize"
-        tools:text="vxx"
-        android:background="@color/overlay"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        tools:text="vxx"/>
 
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/markers"
+        android:layout_toEndOf="@+id/focus_overlay"
+        android:layout_toRightOf="@+id/focus_overlay"
+        android:background="@color/overlay"
         android:gravity="start|center_vertical"
         android:paddingLeft="@dimen/griditem_title_horizontal"
         android:paddingRight="@dimen/griditem_title_horizontal"
+        android:paddingTop="@dimen/griditem_title_top"
         android:textColor="@android:color/white"
         android:textSize="@dimen/griditem_title_textsize"
-        tools:text="Eva"
-        android:background="@color/overlay"
-        android:layout_above="@+id/markers"
-        android:layout_toRightOf="@+id/focus_overlay"
-        android:layout_toEndOf="@+id/focus_overlay"
-        android:paddingTop="@dimen/griditem_title_top" />
+        tools:text="Eva"/>
 
 </RelativeLayout>

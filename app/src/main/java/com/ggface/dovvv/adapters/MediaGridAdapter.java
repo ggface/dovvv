@@ -2,12 +2,6 @@ package com.ggface.dovvv.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.LinearGradient;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,7 +29,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private int mItemWidth, mItemHeight, mMargin, mColumns;
     private List<Person> mItems = new ArrayList<>();
-    private MediaGridAdapter.OnItemClickListener mItemClickListener;
+    private OnPersonItemClickListener mItemClickListener;
     private ScaleToFitWidthHeightTransform transform;
 
     public MediaGridAdapter(Context context, List<Person> items, Integer columns) {
@@ -87,11 +81,11 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             String sd = person.traditional ? "v" : "x";
             String so = person.oral ? "v" : "x";
             String sa = person.anal ? "v" : "x";
-            videoViewHolder.markers.setText(sd + so + sa);
+            videoViewHolder.markers.setText(String.format("%s%s%s", sd, so, sa));
         } else {
             videoViewHolder.markers.setText(person.extension);
         }
-//        videoViewHolder.coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
         videoViewHolder.coverImage.setVisibility(View.GONE);
         videoViewHolder.name.setVisibility(View.GONE);
         videoViewHolder.markers.setVisibility(View.GONE);
@@ -104,7 +98,6 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         RequestCreator rc;
         if (file != null && file.exists() && file.canRead()) {
             rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(file);
-//            rc.resize(mItemWidth, mItemHeight).centerCrop();
         } else {
             rc = Picasso.with(videoViewHolder.coverImage.getContext()).load(R.drawable.test_photo_portret);
         }
@@ -135,17 +128,13 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return null == mItems ? 0 : mItems.size();
     }
 
-    public void setOnItemClickListener(MediaGridAdapter.OnItemClickListener listener) {
+    public void setOnItemClickListener(OnPersonItemClickListener listener) {
         mItemClickListener = listener;
     }
 
     public void setItems(List<Person> items) {
         mItems = items;
         notifyDataSetChanged();
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(View v, Person item, int position);
     }
 
     public List<Person> getItems() {
@@ -185,37 +174,8 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (mItemClickListener != null) {
                 int position = getAdapterPosition();
                 Person item = mItems.get(position);
-                mItemClickListener.onItemClick(view, item, position);
+                mItemClickListener.onPersonClick(item);
             }
-        }
-    }
-
-    private static class DrawGradient implements Transformation {
-        static Transformation INSTANCE = new DrawGradient();
-
-        @Override
-        public Bitmap transform(Bitmap src) {
-            // Code borrowed from https://stackoverflow.com/questions/23657811/how-to-mask-bitmap-with-lineargradient-shader-properly
-            int w = src.getWidth();
-            int h = src.getHeight();
-            Bitmap overlay = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(overlay);
-
-            canvas.drawBitmap(src, 0, 0, null);
-            src.recycle();
-
-            Paint paint = new Paint();
-            float gradientHeight = h / 2f;
-            LinearGradient shader = new LinearGradient(0, h - gradientHeight, 0, h, 0xFFFFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP);
-            paint.setShader(shader);
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-            canvas.drawRect(0, h - gradientHeight, w, h, paint);
-            return overlay;
-        }
-
-        @Override
-        public String key() {
-            return "gradient()";
         }
     }
 
@@ -247,18 +207,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (scaleBitmap != source) {
                 source.recycle();
             }
-//            Canvas canvas = new Canvas(scaleBitmap);
-//
-//            Paint paint = new Paint();
-//            float gradientHeight = newSize / 2f;
-//            LinearGradient shader = new LinearGradient(0, newSize - gradientHeight, 0, newSize, 0xFFFFFFFF, 0x00FFFFFF, Shader.TileMode.CLAMP);
-//            paint.setShader(shader);
-//            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-//            canvas.drawRect(0, newSize - gradientHeight, mSize, newSize, paint);
-
-
             return scaleBitmap;
-
         }
 
         @Override

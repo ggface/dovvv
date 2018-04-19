@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:id="@+id/toast_layout_root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -19,16 +20,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
-            android:src="@drawable/ic_action_alert_warning" />
+            android:src="@drawable/ic_action_alert_warning"/>
 
         <TextView
             android:id="@+id/text"
+            style="@style/TextView.Roboto.Secondary.Inverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:paddingRight="8dp"
-            android:singleLine="true"
-            style="@style/TextView.Roboto.Secondary.Inverse" />
+            android:singleLine="true"/>
     </LinearLayout>
-
 </LinearLayout>

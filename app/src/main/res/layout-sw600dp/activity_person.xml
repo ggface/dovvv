@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,15 +7,14 @@
     android:fitsSystemWindows="true"
     tools:context=".activities.PersonActivity">
 
-    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:elevation="7dp"
         android:minHeight="?attr/actionBarSize"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        app:elevation="7dp"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -35,40 +35,40 @@
             android:orientation="horizontal">
 
             <CheckBox
-                android:id="@+id/cbDefault"
+                android:id="@+id/traditional_check_box"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
                 android:layout_weight="1"
-                android:text="@string/text_default" />
+                android:text="@string/text_default"/>
 
             <CheckBox
-                android:id="@+id/cbOral"
+                android:id="@+id/oral_check_box"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
                 android:layout_weight="1"
-                android:text="@string/text_oral" />
+                android:text="@string/text_oral"/>
 
             <CheckBox
-                android:id="@+id/cbAnal"
+                android:id="@+id/anal_check_box"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/text_anal" />
+                android:text="@string/text_anal"/>
         </LinearLayout>
 
         <EditText
-            android:id="@+id/etName"
+            android:id="@+id/name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/enter_name"
             android:inputType="textCapSentences"
-            android:maxLines="1" />
+            android:maxLines="1"/>
     </LinearLayout>
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fabMenu"
+        android:id="@+id/fab_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -88,15 +88,15 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_action_done"
             app:fab_label="Done"
-            app:fab_size="mini" />
+            app:fab_size="mini"/>
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_refresh"
+            android:id="@+id/menu_photo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_editor_insert_photo"
             app:fab_label="Photo"
-            app:fab_size="mini" />
+            app:fab_size="mini"/>
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/menu_remove"
@@ -104,33 +104,26 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_action_delete"
             app:fab_label="Remove"
-            app:fab_size="mini" />
+            app:fab_size="mini"/>
 
     </com.github.clans.fab.FloatingActionMenu>
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/linearLayout">
 
         <ImageView
-            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center"
             android:src="@drawable/ic_editor_insert_photo"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"/>
 
         <ImageView
-            android:id="@+id/ivPhoto"
+            android:id="@+id/photo_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:ignore="ContentDescription" />
-
-    </RelativeLayout>
-
+            tools:ignore="ContentDescription"/>
+    </FrameLayout>
 </RelativeLayout>

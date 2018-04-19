@@ -168,8 +168,9 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
     }
 
     private Object[] args(Object... values) {
-        if (null == values)
+        if (null == values) {
             return null;
+        }
 
         List<String> list = new ArrayList<>();
         for (Object value : values) {

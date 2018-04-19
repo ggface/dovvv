@@ -13,9 +13,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import com.ggface.dovvv.App;
-import com.ggface.dovvv.Units;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,8 +46,9 @@ public class Tools {
     }
 
     public static String trimDoubleNewline(String source) {
-        if (TextUtils.isEmpty(source))
-            return Units.EMPTY;
+        if (TextUtils.isEmpty(source)) {
+            return "";
+        }
 
         String lines[] = source.split("\\r?\\n");
         List<String> trimList = new ArrayList<String>();
@@ -72,11 +70,13 @@ public class Tools {
             }
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < trimList.size(); i++)
-            if (!Units.EMPTY.equals(trimList.get(i)))
+        for (int i = 0; i < trimList.size(); i++) {
+            if (!"".equals(trimList.get(i))) {
                 sb.append(trimList.get(i)).append("\n");
-            else
+            } else {
                 sb.append("\n");
+            }
+        }
 
 
         return sb.toString().trim();
@@ -137,8 +137,9 @@ public class Tools {
     public static String getSignedNumber(double value) {
         String src = String.valueOf(value);
 
-        if (src.contains("."))
+        if (src.contains(".")) {
             src = src.substring(0, src.lastIndexOf("."));
+        }
 
         return src;
     }
@@ -148,11 +149,12 @@ public class Tools {
     }
 
     private static int getSymbol(byte[] text, int position) {
-        if (position >= 0)
+        if (position >= 0) {
             return text[position] < 0 ? text[position] + 256 : text[position];
-        else
+        } else {
             return text[text.length + position] < 0 ? text[text.length
                     + position] + 256 : text[text.length + position];
+        }
     }
 
     public static String decode(byte[] key, byte[] content) {
@@ -163,10 +165,11 @@ public class Tools {
             int keyCharCode = getSymbol(key, (i % key.length) - 1);
 
             int value = srcCharCode - keyCharCode;
-            if (value < 0)
+            if (value < 0) {
                 value = (srcCharCode - keyCharCode) + 256;
-            else if (value > 127)
+            } else if (value > 127) {
                 value = value + 0;
+            }
 
             decode[i] = (byte) value;
         }
@@ -250,10 +253,12 @@ public class Tools {
             return null;
         } finally {
             try {
-                if (is != null)
+                if (is != null) {
                     is.close();
-                if (os != null)
+                }
+                if (os != null) {
                     os.close();
+                }
             } catch (IOException io) {
                 io.printStackTrace();
             }
@@ -263,10 +268,11 @@ public class Tools {
     public static long folderSize(File directory) {
         long length = 0;
         for (File file : directory.listFiles()) {
-            if (file.isFile())
+            if (file.isFile()) {
                 length += file.length();
-            else
+            } else {
                 length += folderSize(file);
+            }
         }
         return length;
     }

@@ -6,30 +6,10 @@ import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.util.Log;
 
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
-
 import java.io.File;
 import java.util.Locale;
 
-@ReportsCrashes(formUri = "https://collector.tracepot.com/494237a9")
 public class App extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        ACRA.init(this);
-    }
-
-    public static Boolean isDev() {
-        // DON'T TOUCH
-        if (!BuildConfig.DEBUG) {
-            return false;
-        }
-
-        // SET DEV MODE AS INIT VALUE
-        return true;
-    }
 
     public static void logD(String tag, String message) {
         Log.d(tag, message.toUpperCase(Locale.getDefault()));

@@ -6,7 +6,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -30,111 +29,73 @@ import com.ggface.dovvv.classes.IRoom;
 import com.ggface.dovvv.classes.Person;
 import com.ggface.dovvv.classes.Tools;
 import com.ggface.dovvv.widgets.WarningToast;
-import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import butterknife.BindView;
 
-public class PersonActivity extends AppCompatActivity implements WarningToast.OnToastListener {
+public class PersonActivity extends AppCompatActivity {
 
-    private Toast wToast;
+    private static final String EXTRA_PERSON_ID = "EXTRA_PERSON_ID";
+
+    private Toast mToast;
     private Person mPerson;
 
-    private EditText etName;
-    private ImageView ivPhoto;
-    private FloatingActionMenu fMenu;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
-    private final View.OnClickListener onClickListener = new View.OnClickListener() {
+    @BindView(R.id.name_edit_text)
+    EditText mNameEditText;
+
+    @BindView(R.id.traditional_check_box)
+    CheckBox mTraditionalCheckBox;
+
+    @BindView(R.id.oral_check_box)
+    CheckBox mOralCheckBox;
+
+    @BindView(R.id.anal_check_box)
+    CheckBox mAnalCheckBox;
+
+    @BindView(R.id.photo_image_view)
+    ImageView mPhotoImageView;
+
+    @BindView(R.id.fab_menu_button)
+    FloatingActionMenu mFabMenuButton;
+
+    @BindView(R.id.menu_done)
+    View mMenuDone;
+
+    @BindView(R.id.menu_photo)
+    View mMenuPhoto;
+
+    @BindView(R.id.menu_remove)
+    View mMenuRemove;
+
+    private final View.OnClickListener mOnCheckBoxClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.cbDefault:
-                    mPerson.traditional = ((CheckBox) v).isChecked();
+                case R.id.traditional_check_box:
+                    mPerson.traditional = mTraditionalCheckBox.isChecked();
                     break;
-                case R.id.cbAnal:
-                    mPerson.anal = ((CheckBox) v).isChecked();
+                case R.id.oral_check_box:
+                    mPerson.oral = mOralCheckBox.isChecked();
                     break;
-                case R.id.cbOral:
-                    mPerson.oral = ((CheckBox) v).isChecked();
-                    break;
-                case R.id.menu_done:
-                    mPerson.name = etName.getText().toString();
-
-                    if (Units.VAR_NEW_PERSON == mPerson.id) {
-                        mPerson.id = getRoom().insert(mPerson);
-                    }
-
-                    if (Units.VAR_NEW_PERSON == mPerson.id) {
-                        showWarning("Error. Insert a row to database failed.");
-                        return;
-                    }
-
-                    if (null != mPerson.fullpath) {
-                        boolean hasPermission = (ContextCompat.checkSelfPermission(PersonActivity.this,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-
-                        if (!hasPermission) {
-                            ActivityCompat.requestPermissions(PersonActivity.this,
-                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    Units.RC_WRITE_STORAGE);
-                        } else {
-                            String extension = Tools.writePhoto(PersonActivity.this, mPerson.id, new File(mPerson.fullpath));
-                            if (null != extension) {
-                                mPerson.extension = extension;
-                            } else {
-                                showWarning("Error. Copy file failed.");
-                                return;
-                            }
-                        }
-                    }
-
-                    getRoom().update(mPerson);
-                    finish();
-                    break;
-                case R.id.menu_refresh:
-                    boolean hasPermission = (ContextCompat.checkSelfPermission(PersonActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
-
-                    if (!hasPermission) {
-                        ActivityCompat.requestPermissions(PersonActivity.this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                Units.RC_BROWSE_IMAGES);
-                    } else {
-                        Intent intent = new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(intent, Units.RC_BROWSE_PHOTO);
-                    }
-                    break;
-                case R.id.menu_remove:
-                    getRoom().remove(mPerson);
-                    if (null != mPerson.getFilename()) {
-                        File photo = new File(mPerson.getFilename());
-                        if (photo.exists()) {
-                            //noinspection ResultOfMethodCallIgnored
-                            photo.delete();
-                        }
-                    }
-                    finish();
+                case R.id.anal_check_box:
+                    mPerson.anal = mAnalCheckBox.isChecked();
                     break;
             }
         }
     };
 
-    private final FloatingActionMenu.OnMenuToggleListener onMenuToggleListener = new FloatingActionMenu.OnMenuToggleListener() {
-        @Override
-        public void onMenuToggle(boolean opened) {
-            FloatingActionButton fab = fMenu.findViewById(R.id.menu_remove);
-            if (null == fab) {
-                return;
-            }
-
-            fab.setEnabled(mPerson.id != Units.VAR_NEW_PERSON);
-        }
-    };
+    public static void startActivity(@NonNull Activity activity, long personId) {
+        Intent intent = new Intent(activity, PersonActivity.class);
+        intent.putExtra(EXTRA_PERSON_ID, personId);
+        activity.startActivityForResult(intent, Units.RC_PERSON);
+    }
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -142,31 +103,75 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person);
 
-        Toolbar pToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(pToolbar);
-        pToolbar.setNavigationIcon(R.drawable.ic_action_navigation_arrow_back);
-        pToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        setSupportActionBar(mToolbar);
+        mToolbar.setNavigationIcon(R.drawable.ic_action_navigation_arrow_back);
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        ivPhoto = findViewById(R.id.ivPhoto);
-        CheckBox cbDefault = findViewById(R.id.cbDefault);
-        CheckBox cbAnal = findViewById(R.id.cbAnal);
-        CheckBox cbOral = findViewById(R.id.cbOral);
-        etName = findViewById(R.id.etName);
-        ImageView btnAddPhoto = findViewById(R.id.imageView);
-        fMenu = findViewById(R.id.fabMenu);
+        mMenuDone.setOnClickListener(v -> {
+            mPerson.name = mNameEditText.getText().toString();
 
-        findViewById(R.id.menu_done).setOnClickListener(onClickListener);
-        findViewById(R.id.menu_refresh).setOnClickListener(onClickListener);
-        findViewById(R.id.menu_remove).setOnClickListener(onClickListener);
+            if (Units.VAR_NEW_PERSON == mPerson.id) {
+                mPerson.id = getRoom().insert(mPerson);
+            }
 
-        wToast = new WarningToast(this);
-        fMenu.setClosedOnTouchOutside(true);
-        fMenu.setOnMenuToggleListener(onMenuToggleListener);
+            if (Units.VAR_NEW_PERSON == mPerson.id) {
+                showWarning("Error. Insert a row to database failed.");
+                return;
+            }
 
-        btnAddPhoto.setOnClickListener(onClickListener);
-        cbDefault.setOnClickListener(onClickListener);
-        cbAnal.setOnClickListener(onClickListener);
-        cbOral.setOnClickListener(onClickListener);
+            if (null != mPerson.fullpath) {
+                boolean hasPermission = (ContextCompat.checkSelfPermission(PersonActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+
+                if (!hasPermission) {
+                    ActivityCompat.requestPermissions(PersonActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Units.RC_WRITE_STORAGE);
+                } else {
+                    String extension = Tools.writePhoto(PersonActivity.this, mPerson.id, new File(mPerson.fullpath));
+                    if (null != extension) {
+                        mPerson.extension = extension;
+                    } else {
+                        showWarning("Error. Copy file failed.");
+                        return;
+                    }
+                }
+            }
+
+            getRoom().update(mPerson);
+            finish();
+        });
+        mMenuPhoto.setOnClickListener(v -> {
+            boolean hasPermission = (ContextCompat.checkSelfPermission(PersonActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(PersonActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        Units.RC_BROWSE_IMAGES);
+            } else {
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, Units.RC_BROWSE_PHOTO);
+            }
+        });
+        mMenuRemove.setOnClickListener(v -> {
+            getRoom().remove(mPerson);
+            if (null != mPerson.getFilename()) {
+                File photo = new File(mPerson.getFilename());
+                if (photo.exists()) {
+                    photo.delete();
+                }
+            }
+            finish();
+        });
+        mToast = new WarningToast(this);
+        mFabMenuButton.setClosedOnTouchOutside(true);
+        mFabMenuButton.setOnMenuToggleListener(opened -> mMenuRemove.setEnabled(mPerson.id != Units.VAR_NEW_PERSON));
+
+        mTraditionalCheckBox.setOnClickListener(mOnCheckBoxClickListener);
+        mOralCheckBox.setOnClickListener(mOnCheckBoxClickListener);
+        mAnalCheckBox.setOnClickListener(mOnCheckBoxClickListener);
 
         Bundle bundle = getIntent().getExtras();
 
@@ -175,8 +180,8 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
             this.mPerson = new Gson().fromJson(json, Person.class);
 
             getSupportActionBar().setTitle(this.mPerson.name);
-        } else if (Tools.containsLong(bundle, Units.ARG_INDEX)) {
-            long id = bundle.getLong(Units.ARG_INDEX);
+        } else if (Tools.containsLong(bundle, EXTRA_PERSON_ID)) {
+            long id = bundle.getLong(EXTRA_PERSON_ID);
             mPerson = getRoom().select(id);
 
             if (null == mPerson) {
@@ -184,18 +189,18 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
                 finish();
                 return;
             }
-            etName.append(mPerson.name);
+            mNameEditText.append(mPerson.name);
 
             if (null != mPerson.getFilename()) {
                 File file = getFileStreamPath(mPerson.getFilename());
 
                 Picasso.with(this)
                         .load(file)
-                        .into(ivPhoto);
+                        .into(mPhotoImageView);
             }
-            cbDefault.setChecked(mPerson.traditional);
-            cbOral.setChecked(mPerson.oral);
-            cbAnal.setChecked(mPerson.anal);
+            mTraditionalCheckBox.setChecked(mPerson.traditional);
+            mOralCheckBox.setChecked(mPerson.oral);
+            mAnalCheckBox.setChecked(mPerson.anal);
 
             getSupportActionBar().setTitle(R.string.edit_lovely_note);
         } else {
@@ -204,11 +209,6 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
             getSupportActionBar().setTitle(R.string.new_lovely_note);
         }
         createCustomAnimation();
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override
@@ -236,7 +236,7 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
 
             Picasso.with(this)
                     .load(file)
-                    .into(ivPhoto);
+                    .into(mPhotoImageView);
         }
     }
 
@@ -272,7 +272,7 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (null != mPerson) {
-            outState.putString(Units.ARG_JSON, mPerson.toJson());
+            outState.putString(Units.ARG_JSON, new Gson().toJson(mPerson, Person.class));
         }
     }
 
@@ -285,30 +285,25 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
             if (null != mPerson.fullpath) {
                 Picasso.with(this)
                         .load(new File(mPerson.fullpath))
-                        .into(ivPhoto);
+                        .into(mPhotoImageView);
             }
         }
     }
 
-    @Override
-    public void showWarning(String message) {
-        wToast.setText(message);
-        wToast.show();
-    }
-
-    @Override
-    public void hide() {
-        wToast.cancel();
+    private void showWarning(String message) {
+        mToast.cancel();
+        mToast.setText(message);
+        mToast.show();
     }
 
     private void createCustomAnimation() {
         AnimatorSet set = new AnimatorSet();
 
-        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
-        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleY", 1.0f, 0.2f);
 
-        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
-        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(fMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mFabMenuButton.getMenuIconView(), "scaleY", 0.2f, 1.0f);
 
         scaleOutX.setDuration(50);
         scaleOutY.setDuration(50);
@@ -319,7 +314,7 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
         scaleInX.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                fMenu.getMenuIconView().setImageResource(fMenu.isOpened()
+                mFabMenuButton.getMenuIconView().setImageResource(mFabMenuButton.isOpened()
                         ? R.drawable.ic_action_navigation_close : R.drawable.ic_action_navigation_menu);
             }
         });
@@ -328,7 +323,7 @@ public class PersonActivity extends AppCompatActivity implements WarningToast.On
         set.play(scaleInX).with(scaleInY).after(scaleOutX);
         set.setInterpolator(new OvershootInterpolator(2));
 
-        fMenu.setIconToggleAnimatorSet(set);
+        mFabMenuButton.setIconToggleAnimatorSet(set);
     }
 
     private IRoom getRoom() {
