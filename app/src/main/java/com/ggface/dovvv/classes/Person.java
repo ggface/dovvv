@@ -18,6 +18,9 @@ public class Person implements Parcelable {
     public long id;
 
     @Expose
+    public int mPosition;
+
+    @Expose
     public String extension;
 
     @Expose
@@ -30,6 +33,7 @@ public class Person implements Parcelable {
 
     protected Person(Parcel parcel) {
         id = parcel.readLong();
+        mPosition = parcel.readInt();
         extension = parcel.readString();
         name = parcel.readString();
         oral = PojoUtils.toBoolean(parcel.readByte());
@@ -55,6 +59,7 @@ public class Person implements Parcelable {
         cv.put("oral", this.oral ? 1 : 0);
         cv.put("anal", this.anal ? 1 : 0);
         cv.put("ext", this.extension);
+        cv.put("position", mPosition);
         return cv;
     }
 
@@ -68,6 +73,7 @@ public class Person implements Parcelable {
         }
         Person that = (Person) o;
         return PojoUtils.equal(id, that.id) &&
+                PojoUtils.equal(mPosition, that.mPosition) &&
                 PojoUtils.equal(extension, that.extension) &&
                 PojoUtils.equal(name, that.name) &&
                 PojoUtils.equal(oral, that.oral) &&
@@ -78,7 +84,7 @@ public class Person implements Parcelable {
 
     @Override
     public int hashCode() {
-        return PojoUtils.hashCode(id, extension, name, oral, anal,
+        return PojoUtils.hashCode(id, mPosition, extension, name, oral, anal,
                 traditional, fullpath);
     }
 
@@ -86,6 +92,7 @@ public class Person implements Parcelable {
     public String toString() {
         return "Person{" +
                 "id=" + id +
+                ", mPosition='" + mPosition + '\'' +
                 ", extension='" + extension + '\'' +
                 ", name='" + name + '\'' +
                 ", oral=" + oral +
@@ -104,6 +111,7 @@ public class Person implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
+        dest.writeInt(mPosition);
         dest.writeString(extension);
         dest.writeString(name);
         dest.writeByte(PojoUtils.toByte(oral));

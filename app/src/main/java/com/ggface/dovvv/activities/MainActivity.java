@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.ggface.dovvv.BuildConfig;
 import com.ggface.dovvv.R;
@@ -16,6 +17,7 @@ import com.ggface.dovvv.classes.DBHelper;
 import com.ggface.dovvv.classes.IOUtils;
 import com.ggface.dovvv.classes.Person;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,6 +27,7 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
 
     private MediaGridAdapter mAdapter;
+    private ItemTouchHelper mItemTouchHelper;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initAdapter(mColumns);
         initRecyclerView(mColumns);
+        initTouchHelper();
         IOUtils.clearOutdatedFiles(this, mAdapter.getItems());
     }
 
@@ -99,5 +103,27 @@ public class MainActivity extends AppCompatActivity {
         mPersonsRecyclerView.setLayoutManager(mLayoutManager);
         mPersonsRecyclerView.setHasFixedSize(true);
         mPersonsRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void initTouchHelper() {
+        ItemTouchHelper.Callback _ithCallback = new ItemTouchHelper.Callback() {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Collections.swap(mAdapter.getItems(), viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                mAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            }
+
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeFlag(ItemTouchHelper.ACTION_STATE_DRAG,
+                        ItemTouchHelper.DOWN | ItemTouchHelper.UP | ItemTouchHelper.START | ItemTouchHelper.END);
+            }
+        };
+
+        mItemTouchHelper = new ItemTouchHelper(_ithCallback);
     }
 }

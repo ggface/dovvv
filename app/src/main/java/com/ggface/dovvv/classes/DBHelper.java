@@ -5,21 +5,32 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 import com.ggface.dovvv.App;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper implements IRoom {
 
-    public static final int DATABASE_VERSION = 1;
+    /**
+     * Базовая версия БД
+     */
+    public static final int VERSION_1 = 1;
+
+    /**
+     * Добавил поле для сортировки
+     */
+    public static final int VERSION_2 = 2;
+
     public static final String DATABASE_NAME = "pHunters.db";
     public static final String TABLE_NAME = "persons";
     private static DBHelper theDb;
 
     private DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, VERSION_2);
     }
 
     @Override
@@ -39,22 +50,14 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < VERSION_2) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN position INTEGER DEFAULT 0");
 
-    }
-
-    public void reCreate() {
-        try {
-            SQLiteDatabase db = this.getWritableDatabase();
-            db.execSQL("drop table " + TABLE_NAME);
-            db.execSQL("CREATE TABLE persons (_id INTEGER PRIMARY KEY" +
-                    ", person_name TEXT" +
-                    ", pussy INTEGER" +
-                    ", anal INTEGER" +
-                    ", oral INTEGER" +
-                    ", ext TEXT);");
-        } catch (SQLException e) {
-            String msg = e.getMessage();
-            App.logD("DBHelper onCreate", msg);
+            List<Person> personList = read();
+            for (int i = 0; i < personList.size(); i++) {
+                personList.get(i).mPosition = i;
+                update(personList.get(i));
+            }
         }
     }
 
@@ -67,6 +70,7 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
         return theDb;
     }
 
+    @NonNull
     @Override
     public List<Person> read() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -75,7 +79,7 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
         try {
             c = db.rawQuery("SELECT * FROM " + DBHelper.TABLE_NAME, null);
         } catch (Exception e) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<Person> list = new ArrayList<>();
@@ -102,6 +106,8 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
         }
 
         c.close();
+
+        Collections.sort(list, (person1, person2) -> Integer.compare(person1.mPosition, person2.mPosition));
         return list;
     }
 
@@ -123,8 +129,10 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
             int analColIndex = c.getColumnIndex("anal");
             int oralColIndex = c.getColumnIndex("oral");
             int extColIndex = c.getColumnIndex("ext");
+            int posColIndex = c.getColumnIndex("position");
             item = new Person();
             item.id = c.getInt(idColIndex);
+            item.mPosition = c.getInt(posColIndex);
             item.name = c.getString(nameColIndex);
 
             item.traditional = c.getInt(pussyColIndex) == 1;
@@ -146,10 +154,10 @@ public class DBHelper extends SQLiteOpenHelper implements IRoom {
     }
 
     @Override
-    public void update(Person instance) {
+    public void update(Person person) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String[] args = new String[]{String.valueOf(instance.id)};
-        db.update(TABLE_NAME, instance.toDB(), "_id=?", args);
+        String[] args = new String[]{String.valueOf(person.id)};
+        db.update(TABLE_NAME, person.toDB(), "_id=?", args);
         db.close();
     }
 
